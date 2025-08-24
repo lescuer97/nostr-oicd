@@ -53,3 +53,5 @@ go.sum
 # OS generated files
 Thumbs.db
 ehthumbs.db
+# Generated templ files
+*.templ.go

@@ -1,0 +1,19 @@
+package templates
+
+// Dashboard defines a templ component that renders the full dashboard HTML document.
+templ Dashboard() {
+	@Layout() {
+		<main>
+			<section id="stats">
+				<h2>Overview</h2>
+				<p>Statistics and recent activity will appear here.</p>
+			</section>
+			<section id="content">
+				<h2>Your content</h2>
+				<div id="items">
+					<!-- dynamic items go here -->
+				</div>
+			</section>
+		</main>
+	}
+}

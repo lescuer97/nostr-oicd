@@ -8,8 +8,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http/httptest"
-	"testing"
 	dbpkg "nostr-oidc-service/internal/db"
+	"testing"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {
