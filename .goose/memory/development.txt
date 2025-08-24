@@ -1,0 +1,26 @@
+# #todo #nostr-oidc #server #project-specific
+- Phase 1: Project bootstrap
+  - [ ] Create project directory structure and Go module
+  - [ ] Implement sqlite3 DB connection and migrations runner
+  - [ ] Define User and Session models (db layer)
+- Phase 2: Nostr auth core
+  - [ ] Implement challenge generator (32-byte hex)
+  - [ ] Implement Nostr-based signature verification (verify endpoint)
+  - [ ] Add GET /auth/challenge and POST /auth/verify endpoints
+  - [ ] Implement session creation post-auth
+- Phase 3: HTTP handlers and templating
+  - [ ] Set up templating with templ package and base layout
+  - [ ] Build login, dashboard, and admin templates
+  - [ ] Implement HTMX-enabled endpoints for dynamic UI
+- Phase 4: Frontend integration
+  - [ ] Implement NIP-07 client flow in JavaScript
+  - [ ] Add proper error handling and UI feedback
+- Phase 5: Security hardening
+  - [ ] CSRF protection on mutating routes
+  - [ ] Admin route authorization checks
+  - [ ] Rate limiting on auth endpoints
+- Phase 6: Config & deployment
+  - [ ] Environment-based configuration
+  - [ ] Dockerfile and optional docker-compose
+  - [ ] Logging and graceful shutdown
+
