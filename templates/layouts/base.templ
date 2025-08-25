@@ -1,0 +1,50 @@
+package layout
+
+import "github.com/a-h/templ"
+
+// Base layout component. `contents` is a templ.Component passed in by pages.
+templ Base(user interface{}, title string, contents templ.Component) {
+	<!doctype html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width,initial-scale=1" />
+			<title>{ title }</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+		</head>
+		<body class="bg-gray-50 text-gray-900">
+			<nav class="bg-white shadow">
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div class="flex justify-between h-16">
+						<div class="flex">
+							<div class="flex-shrink-0 flex items-center">
+								<a href="/" class="text-xl font-bold">nostr-oicd</a>
+							</div>
+						</div>
+						<div class="flex items-center">
+							if user {
+								<span class="mr-4">{ user }</span>
+								<a href="/api/auth/logout" class="text-sm text-red-500">Logout</a>
+							} else {
+								<a href="/login" class="text-sm mr-4">Login</a>
+								<a href="/signup" class="text-sm text-blue-600">Sign up</a>
+							}
+						</div>
+					</div>
+				</div>
+			</nav>
+
+			<main class="py-10">
+				<div class="max-w-3xl mx-auto px-4">
+					@contents
+				</div>
+			</main>
+
+			<footer class="mt-20 text-center text-sm text-gray-500">
+				&copy; nostr-oicd
+			</footer>
+
+			<script src="/static/js/nostr-auth.js"></script>
+		</body>
+	</html>
+}
