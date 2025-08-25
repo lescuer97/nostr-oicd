@@ -1,55 +1,11 @@
-# Project TODO — Go Chi Server with Nostr NIP-07 Auth and Templ
+# TODO checklist for wiring DB and JWT environment
 
-- [ ] Step 1: Initialize project structure
-  - [ ] Create directories (cmd/, internal/{auth,handlers,middleware,models,database}, templates/{components,layouts,pages}, static/{css,js}, database/migrations)
-  - [ ] Create README.md and LICENSE
-- [ ] Step 2: Set up dependencies and tools
-  - [ ] go mod init github.com/lescuer97/nostr-oicd
-  - [ ] Add Go dependencies (chi, cors, jwt/v5, templ, mattn/go-sqlite3, go-nostr)
-  - [ ] Install templ CLI (optional)
-- [ ] Step 3: Database schema and models
-  - [ ] Add SQL migrations for users and sessions
-  - [ ] Implement internal/database package to run migrations and provide DB handle
-  - [ ] Implement internal/models with User and Session structs + queries
-- [ ] Step 4: Templ templates
-  - [ ] Create layouts/base.templ
-  - [ ] Create components (navbar.templ, button.templ, form.templ)
-  - [ ] Create pages (login.templ, signup.templ, dashboard.templ, 404.templ, 500.templ)
-- [ ] Step 5: Frontend JS for NIP-07
-  - [ ] Create static/js/nostr-auth.js with functions: checkNostrExtension, getPublicKey, signEvent, login, signup
-  - [ ] Wire NIP-07 buttons on login/signup pages
-- [ ] Step 6: Authentication system
-  - [ ] Implement challenge generation and storage (short-lived in DB or cache)
-  - [ ] Verify Nostr signatures server-side
-  - [ ] Create JWT tokens and sessions table entries
-  - [ ] Set HTTP-only cookie on successful auth
-- [ ] Step 7: Middleware
-  - [ ] Auth middleware to validate JWT + DB session and add user to context
-  - [ ] Admin middleware to check is_admin
-- [ ] Step 8: HTTP Handlers
-  - [ ] Page handlers (/, /login, /signup, /dashboard)
-  - [ ] API handlers (GET /api/auth/challenge, POST /api/auth/login, POST /api/auth/signup, POST /api/auth/logout, GET /api/auth/status)
-- [ ] Step 9: Static file serving and CSS build
-  - [ ] Use Tailwind Play CDN in templates (no local build required)
-  - [ ] Serve /static/ with correct cache headers in production
-- [ ] Step 10: Server setup and routing
-  - [ ] Implement cmd/server/main.go with Chi router and middleware
-  - [ ] Add graceful shutdown and logging
-- [ ] Step 11: Template compilation and build process
-  - [ ] Add templ generate script to build step (optional)
-  - [ ] Add a development script to run templ/go server concurrently
-- [ ] Step 12: UI design
-  - [ ] Implement Tailwind styles for login/signup/dashboard
-- [ ] Step 13: Error handling & validation
-  - [ ] Implement frontend and backend validation and error pages
-- [ ] Step 14: Security hardening
-  - [ ] Secure cookies, SameSite, HTTPS note
-  - [ ] Rate limiter for auth endpoints
-  - [ ] Session cleanup goroutine
-- [ ] Step 15: DB init and migrations
-  - [ ] Migration tooling or simple runner
-  - [ ] Provide seed data for development (non-admin users)
-
-Notes:
-- Remember to run `go fmt` on Go files per project memory.
-- Do not commit secrets. Use environment variables for config (DB path, JWT secret, cookie domain, TLS settings).
+- [x] Wire DB into RegisterRoutes and pass *sql.DB to LoginHandler
+- [x] Run migrations at startup using internal/database.RunMigrations
+- [x] Load JWT_SECRET from environment in login handler
+- [ ] Move JWT secret into startup config (centralized) and propagate to handlers
+- [ ] Replace placeholder session token hash with secure HMAC or random token + hash
+- [ ] Create templ fragments for login success/error and render them
+- [ ] Add session cleanup goroutine
+- [ ] Add rate limiting middleware for auth endpoints
+- [ ] Add tests for auth flow

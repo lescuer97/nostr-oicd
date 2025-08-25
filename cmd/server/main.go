@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/lescuer97/nostr-oicd/internal/auth"
+	"github.com/lescuer97/nostr-oicd/internal/database"
 	pages "github.com/lescuer97/nostr-oicd/templates/pages"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -31,11 +31,17 @@ func main() {
 		dbPath = "./database/dev.sqlite3"
 	}
 
-	db, err := sql.Open("sqlite3", dbPath)
+	// Open DB using our helper
+	db, err := database.Open(dbPath)
 	if err != nil {
 		log.Fatalf("failed to open database: %v", err)
 	}
 	defer db.Close()
+
+	// Run migrations
+	if err := database.RunMigrations(db, "./database/migrations"); err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
 
 	r := chi.NewRouter()
 
@@ -49,7 +55,7 @@ func main() {
 	}))
 
 	// Register auth routes
-	auth.RegisterRoutes(r)
+	auth.RegisterRoutes(r, db)
 
 	// Static file server
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
