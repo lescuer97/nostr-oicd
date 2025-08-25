@@ -1,0 +1,1369 @@
+========================
+CODE SNIPPETS
+========================
+TITLE: Install Dependencies and Run Tests
+DESCRIPTION: Installs project dependencies using npm and then executes the test suite. Playwright is automatically installed during test runs.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm install
+npm run test
+```
+
+----------------------------------------
+
+TITLE: Local Development Setup
+DESCRIPTION: Outlines the steps to set up a local development environment for htmx, including installing dependencies, running a web server, and accessing the test suite.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/README.md#_snippet_2
+
+LANGUAGE: bash
+CODE:
+```
+npm install
+npx serve
+```
+
+----------------------------------------
+
+TITLE: Start Job Button
+DESCRIPTION: Initial HTML structure with a button to initiate a job via a POST request to '/start'. The div uses hx-target and hx-swap to replace itself with the job status.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-target="this" hx-swap="outerHTML">
+  <h3>Start Progress</h3>
+  <button class="btn primary" hx-post="/start">
+            Start Job
+  </button>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Server Setup and Response Handling
+DESCRIPTION: This snippet demonstrates how to set up a mock server for testing HTMX functionality. It includes configuring automatic responses for specific HTTP requests, such as GET requests to '/prompt' and '/confirm', and defining the content of these responses.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/confirm-and-prompt.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/prompt", function(xhr){
+  xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["HX-Prompt"]);
+})
+server.respondWith("GET", "/confirm", function(xhr){
+  xhr.respond(200, {}, "Confirmed")
+})
+```
+
+----------------------------------------
+
+TITLE: Install htmx via CDN (minified)
+DESCRIPTION: Provides the script tag to include the minified version of htmx from a CDN, suitable for quick setup.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
+```
+
+----------------------------------------
+
+TITLE: Go HTMX Examples
+DESCRIPTION: Demonstrates HTMX integration with Go backend frameworks like templ and elem-go. Includes examples for Fiber framework.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/server-examples.md#_snippet_1
+
+LANGUAGE: Go
+CODE:
+```
+// Example using templ with HTMX
+// See: https://templ.guide/server-side-rendering/htmx
+// See: https://github.com/jritsema/go-htmx-tailwind-example
+```
+
+LANGUAGE: Go
+CODE:
+```
+// Example using elem-go with HTMX and Fiber
+// See: https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter
+// See: https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo
+```
+
+LANGUAGE: Go
+CODE:
+```
+// HTMGO framework for Go and HTMX
+// See: https://htmgo.dev
+```
+
+----------------------------------------
+
+TITLE: RESTful API Request Example
+DESCRIPTION: A simple GET request to a bank account resource, demonstrating a typical HTTP request.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hateoas.md#_snippet_1
+
+LANGUAGE: txt
+CODE:
+```
+GET /accounts/12345 HTTP/1.1
+Host: bank.example.com
+```
+
+----------------------------------------
+
+TITLE: Example HTTP API Response
+DESCRIPTION: Illustrates a standard HTTP response for a GET request to an account resource, showcasing the status code and content type.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/two-approaches-to-decoupling.md#_snippet_2
+
+LANGUAGE: http
+CODE:
+```
+HTTP/1.1 200 OK
+
+<html>
+  <body>
+    <div>Account number: 12345</div>
+    <div>Balance: $100.00 USD</div>
+    <div>Links:
+        <a href="/accounts/12345/deposits">deposits</a>
+        <a href="/accounts/12345/withdrawals">withdrawals</a>
+        <a href="/accounts/12345/transfers">transfers</a>
+        <a href="/accounts/12345/close-requests">close-requests</a>
+    </div>
+  <body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: Install htmx Head Support Extension via CDN
+DESCRIPTION: Includes the core htmx library and the head-support extension from CDNs. This is the simplest way to get started.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/head-support.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.2" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="head-support">
+...
+```
+
+----------------------------------------
+
+TITLE: Install Workbox CLI
+DESCRIPTION: Installs the Workbox command-line interface globally, which is used for automating service worker generation.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_2
+
+LANGUAGE: bash
+CODE:
+```
+npm install workbox-cli --global
+```
+
+----------------------------------------
+
+TITLE: Load Initial Tab with htmx
+DESCRIPTION: This HTML snippet initializes the tab component by fetching the content for the first tab ('/tab1') when the page loads. It uses htmx attributes to specify the GET request, trigger, target, and swap method.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/tabs-hateoas.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div id="tabs" hx-get="/tab1" hx-trigger="load delay:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
+```
+
+----------------------------------------
+
+TITLE: htmx Demo Example
+DESCRIPTION: An example demonstrating the use of the htmx demo script. It includes a button to trigger a POST request, an output element, and a template tag to provide a delayed mock response with dynamic content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_72
+
+LANGUAGE: html
+CODE:
+```
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
+<!-- post to /foo -->
+<button hx-post="/foo" hx-target="#result">
+    Count Up
+</button>
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo" delay="500"> <!-- note the url and delay attributes -->
+    ${globalInt++}
+</template>
+```
+
+----------------------------------------
+
+TITLE: Google Slides Link Example
+DESCRIPTION: A markdown example of how to link to a Google Slides presentation, including instructions to check the speaker notes.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/a-real-world-react-to-htmx-port.md#_snippet_1
+
+LANGUAGE: markdown
+CODE:
+```
+The slides for the presentation can be found here (be sure to check the excellent speakers notes!)
+
+<https://docs.google.com/presentation/d/1jW7vTiHFzA71m2EoCywjNXch-RPQJuAkTiLpleYFQjI/edit?usp=sharing>
+```
+
+----------------------------------------
+
+TITLE: HTMX CSS Transition Example
+DESCRIPTION: This example shows how to trigger a CSS transition with HTMX. When the button is clicked, it sends a GET request. The `hx-swap` attribute is set to `outerHTML swap:5s ease-in-out` which applies a 5-second ease-in-out transition to the swapped content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/_index.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+```
+<button hx-get="/new-content" hx-swap="outerHTML swap:5s ease-in-out">
+  Animate Content
+</button>
+```
+
+----------------------------------------
+
+TITLE: Fake Server Side Code for Web Component Demo
+DESCRIPTION: Provides the server-side simulation for the web component example. It defines a custom element `my-component`, initializes a route for the demo, and handles a GET request for `/my-component-clicked`, updating a click counter and returning dynamic content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/web-components.md#_snippet_1
+
+LANGUAGE: js
+CODE:
+```
+//=========================================================================
+// Fake Server Side Code
+//=========================================================================
+
+// data
+let timesClicked = 0
+
+customElements.define('my-component', class MyComponent extends HTMLElement {
+  // This method runs when your custom element is added to the page
+  connectedCallback() {
+    const root = this.attachShadow({ mode: 'closed' })
+    root.innerHTML = `
+      <button hx-get="/my-component-clicked" hx-target="next div">Click me!</button>
+      <div></div>
+    `
+    htmx.process(root) // Tell HTMX about this component's shadow DOM
+  }
+})
+
+// routes
+init('/demo', function() {
+  return `<my-component></my-component>`
+})
+
+onGet('/my-component-clicked', function() {
+  return `<p>Clicked ${++timesClicked} time${timesClicked > 1 ? 's' : ''}!</p>`
+})
+```
+
+----------------------------------------
+
+TITLE: Hotwire / Turbo to htmx Migration Guide
+DESCRIPTION: Provides guidance on common practices for migrating from Hotwire/Turbo to htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_28
+
+LANGUAGE: APIDOC
+CODE:
+```
+Hotwire/Turbo to htmx Migration Guide:
+
+This guide outlines common patterns and differences when migrating from Hotwire/Turbo to htmx.
+
+Key Differences:
+- **Event Naming**: Turbo uses events like `turbo:load`, while htmx uses `htmx:load`.
+- **Targeting**: Turbo often relies on `data-turbo-frame`, htmx uses `hx-target`.
+- **Swapping**: Turbo has specific swap strategies, htmx offers `hx-swap` attributes.
+- **Interceptors**: Turbo uses `MutationObserver`, htmx uses event listeners like `htmx:configRequest`.
+
+Common Migration Steps:
+1.  **Replace Turbo Attributes**: Swap `data-turbo-` attributes with `hx-` attributes (e.g., `data-turbo-action` to `hx-get`, `hx-post`, etc.).
+2.  **Adjust Event Listeners**: Update JavaScript event listeners to match htmx event names.
+3.  **Update Server Responses**: Ensure server responses include appropriate headers or OOB swaps for updating multiple elements.
+4.  **Consider `hx-boost`**: For a smoother transition, `hx-boost` can be used to progressively enhance links and forms.
+
+Example: Turbo Frame vs htmx Target
+
+Turbo:
+```html
+<turbo-frame id="user-profile" src="/users/1">
+  Loading profile...
+</turbo-frame>
+```
+
+htmx:
+```html
+<div id="user-profile" hx-get="/users/1" hx-trigger="load" hx-swap="innerHTML">
+  Loading profile...
+</div>
+```
+
+Example: Turbo Stream vs htmx OOB Swap
+
+Turbo Stream Response:
+```html
+<turbo-stream action="update" target="user-profile">
+  <template>
+    <div>User Profile Content</div>
+  </template>
+</turbo-stream>
+```
+
+htmx OOB Swap Response:
+```html
+<div id="user-profile" hx-swap-oob="true">User Profile Content</div>
+```
+```
+
+----------------------------------------
+
+TITLE: HTMX Server-Side Integration Examples
+DESCRIPTION: This section lists various server-side frameworks and languages that have examples of integrating with HTMX. It serves as a directory for developers to find relevant projects and learn how to use HTMX with their preferred technology stack.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/server-examples.md#_snippet_0
+
+LANGUAGE: General
+CODE:
+```
+General Resources:
+- https://github.com/rajasegar/awesome-htmx
+
+Julia:
+- https://github.com/leephillips/juliaVortexWeb/
+- https://github.com/leephillips/pluckit
+
+JavaScript (Node.js):
+- https://github.com/rajasegar/todomvc-htmx
+- https://github.com/rajasegar/htmx-twitter-clone
+- https://github.com/rajasegar/htmx-trello
+
+JavaScript (hapi):
+- https://github.com/DamianStanger/hapi-htmx
+
+Python:
+- https://github.com/PyHAT-stack/awesome-python-htmx
+
+Python (Django):
+- https://github.com/adamchainz/django-htmx
+- https://github.com/spookylukey/django-htmx-patterns/
+- https://github.com/idlesign/django-siteajax
+- https://github.com/guettli/django-htmx-fun/
+- https://www.photondesigner.com/articles/submit-async-django-form-with-htmx
+
+Python (FastAPI):
+- https://github.com/renceInbox/fastapi-todo
+- https://github.com/AutomationPanda/bulldoggy-reminders-app
+- https://github.com/volfpeter/fastapi-htmx-tailwind-example
+
+Python (Flask):
+- https://github.com/edmondchuc/flask-htmx
+- https://github.com/cscortes/htmxflask
+- https://github.com/Konfuzian/htmx-examples-with-flask/
+
+Python (Lua):
+- https://realtimelogic.com/articles/LSP-htmx-A-Powerful-Duo-for-Embedded-Web-Apps
+
+Python (py4web):
+- https://github.com/jpsteil/py4web_htmx_demo
+
+Java (Javalin):
+- https://github.com/AussieGuy0/java-htmx-todo/
+- https://github.com/erwindrsno/simple-to-do-list
+
+Java (Spring Boot):
+- https://github.com/wiverson/htmx-demo
+- https://github.com/wimdeblauwe/blog-example-code/tree/master/todomvc-htmx
+
+Java (Quarkus):
+- https://github.com/ia3andy/renotes
+- https://github.com/ia3andy/htmx-todo
+
+ColdFusion (CFML):
+- https://github.com/bpamiri/cfwheels-todomvc-htmx
+- https://www.forgebox.io/view/cfwheels-htmx-plugin
+- https://github.com/chapmandu/cfwheels-htmx-crud
+
+C# (ASP.NET Core):
+- https://github.com/jerriepelser-blog/htmx-with-aspnet-core
+- https://github.com/mryderie/aspnet-core-htmx-example
+- https://github.com/khalidabuhakmeh/Htmx.Net
+- https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers
+- https://github.com/hlaueriksson/Markupolation/tree/main/samples
+
+C# (Blazor):
+- https://github.com/grugBraid/haxor-contact-app
+
+Prolog:
+- https://github.com/Anniepoo/declswiplweb
+
+Lisp:
+- https://github.com/rajasegar/ccl-demo-raja
+- https://github.com/rajasegar/cl-trello-clone
+- https://github.com/rajasegar/cl-github-timeline
+
+Clojure:
+- https://github.com/whamtet/ctmx
+- https://github.com/jcpsantiago/htmx-clj-dashboard
+- https://github.com/prestancedesign/babashka-htmx-todoapp
+- https://github.com/dharrigan/startrek
+
+Ruby:
+- https://alchemists.io/projects/htmx
+
+Ruby (Rails):
+- https://github.com/rootstrap/htmx-rails
+- https://github.com/guilleiguaran/rails-htmx
+
+Ruby (Sinatra):
+- https://github.com/libsyz/htmx-to-do-app
+- https://github.com/beechnut/pokebutt-htmx
+
+Rust:
+- https://github.com/paultuckey/example-todo-app-rust-htmx
+- https://github.com/welshdave/actix-htmx
+
+Scala (http4s):
+- https://github.com/martinprobson/http4s-htmx-demo
+- https://github.com/eikek/htmx4s
+
+Scala (zio-http):
+- https://github.com/rockthejvm/scalatags-htmx-demo
+
+Kotlin (Ktor):
+- https://github.com/Rattlyy/htmx-ktor
+
+Kotlin (Http4k):
+- https://github.com/corlaez/todo-hda-kt
+- https://github.com/mikaelstaldal/htmx-http4k-thymeleaf
+
+Julia:
+- https://github.com/clarkevans/TodoMVC.jl
+
+OCaml:
+- https://ocaml.org/p/dream-htmx
+- https://github.com/yawaramin/dream-html
+
+PHP (CodeIgniter 4):
+- https://github.com/michalsn/codeigniter-htmx-demo
+
+PHP (Laravel):
+- https://spirofloropoulos.com/laravel-htmx-hard-mode-1.html
+
+PHP (Symfony):
+- https://github.com/tomcri/htmxfony
+
+Elixir (Phoenix):
+- https://github.com/hungle00/todo-htmx
+
+Elixir (Bandit with Plug Application):
+- https://github.com/lorantkurthy/todo-htmex
+
+F# (Giraffe):
+- https://hamy.xyz/labs/2023-12-fsharp-htmx
+- https://github.com/bit-badger/Giraffe.Htmx
+
+F# (Feliz.ViewEngine.Htmx):
+- https://github.com/Zaid-Ajaj/Feliz.ViewEngine.Htmx
+- https://github.com/jkone27/todo-mvc-feliz-htmx
+
+F# (Falco.Htmx):
+- https://github.com/dpraimeyuu/Falco.Htmx
+
+F# (Suave with Feliz):
+- https://jkone27-3876.medium.com/htmx-and-f-c1ffdc18fbb5
+
+Go:
+- (No specific Go examples provided in the text, but the language is listed as a category.)
+```
+
+----------------------------------------
+
+TITLE: Install htmx Response Targets Extension via CDN
+DESCRIPTION: This snippet shows how to include the htmx core library and the response-targets extension using Content Delivery Networks (CDNs). It's the quickest way to get started.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/response-targets.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="response-targets">
+...
+```
+
+----------------------------------------
+
+TITLE: Scripting Examples in HDA (hyperscript, AlpineJS, VanillaJS)
+DESCRIPTION: Demonstrates three different approaches to embedding client-side scripting directly within HTML elements for an HDA architecture. Each example shows how to toggle a CSS class on a button click.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-driven-applications.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<!-- hyperscript -->
+<button _="on click toggle .red-border">
+  Toggle Class
+</button>
+
+<!-- Alpine JS -->
+<button @click="open = !open" :class="{'red-border' : open, '' : !open}">
+  Toggle Class
+</button>
+
+<!-- VanillaJS -->
+<button onclick="this.classList.toggle('red-border')">
+  Toggle Class
+</button>
+```
+
+----------------------------------------
+
+TITLE: htmx GET Request Attribute
+DESCRIPTION: Illustrates the htmx attribute for making GET requests, equivalent to Intercooler's `ic-get-from`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_9
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-get-from -->
+<button hx-get="/data">Load Data</button>
+```
+
+----------------------------------------
+
+TITLE: Datastar Backend Setup (SSE-oriented)
+DESCRIPTION: Datastar takes an Server-Sent Events (SSE) oriented approach to hypermedia. This snippet illustrates a conceptual backend setup for handling SSE connections, which is a core part of Datastar's functionality.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/alternatives.md#_snippet_2
+
+LANGUAGE: typescript
+CODE:
+```
+// Conceptual backend setup for SSE with Datastar
+
+// Assume 'server' is an HTTP server instance
+// Assume 'DatastarSSE' is a class to handle SSE connections
+
+// server.on('request', (req, res) => {
+//   if (req.url === '/events') {
+//     const sse = new DatastarSSE(res);
+//     // Logic to send Datastar events to the client
+//     // e.g., sse.send({ type: 'update', payload: { data: '...' } });
+//   }
+// });
+
+// This is a simplified representation. Actual implementation would involve
+// specific server framework and SSE handling logic.
+```
+
+----------------------------------------
+
+TITLE: Vendoring Recommendation - Surreal
+DESCRIPTION: The Surreal project, a lightweight jQuery alternative, recommends vendoring the software into your own project as the primary installation mechanism.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/vendoring.md#_snippet_8
+
+LANGUAGE: English
+CODE:
+```
+https://github.com/gnat/surreal#-install
+```
+
+----------------------------------------
+
+TITLE: Fake Server-Side Logic (JavaScript)
+DESCRIPTION: Simulates server-side routing and templating for the HTMX progress bar demo. Includes functions for initializing routes, handling POST and GET requests, and rendering HTML templates.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_5
+
+LANGUAGE: javascript
+CODE:
+```
+//=========================================================================
+    // Fake Server Side Code
+    //=========================================================================
+
+    // routes
+    init("/demo", function(request, params){
+      return startButton("Start Progress");
+    });
+
+    onPost("/start", function(request, params){
+        var job = jobManager.start();
+        return jobStatusTemplate(job);
+    });
+
+    onGet("/job", function(request, params){
+        var job = jobManager.currentProcess();
+        return jobStatusTemplate(job);
+    });
+
+    onGet("/job/progress", function(request, params, responseHeaders){
+        var job = jobManager.currentProcess();
+
+        if (job.complete) {
+          responseHeaders["HX-Trigger"] = "done";
+        }
+        return jobProgressTemplate(job);
+    });
+
+    // templates
+    function startButton(message) {
+      return `<div hx-target="this" hx-swap="outerHTML">
+  <h3>${message}</h3>
+  <button class="btn primary" hx-post="/start">
+            Start Job
+  </button>
+</div>`;
+    }
+
+    function jobProgressTemplate(job) {
+
+```
+
+----------------------------------------
+
+TITLE: htmx Include Attribute Usage
+DESCRIPTION: Provides an example of using the `hx-include` attribute in htmx, which is equivalent to Intercooler's `ic-include`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_13
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-include -->
+<div hx-get="/process" hx-include="#data-to-send">Process Data</div>
+```
+
+----------------------------------------
+
+TITLE: Debug Tests in Headed Mode
+DESCRIPTION: Starts the test server and opens the test runner in a headed browser for debugging. Test logs appear in the browser's developer console.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_6
+
+LANGUAGE: bash
+CODE:
+```
+npm run test:debug
+```
+
+----------------------------------------
+
+TITLE: htmx Integration Example
+DESCRIPTION: Demonstrates a basic integration of htmx, showing how to trigger a request and update a part of the DOM.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/spa-alternative.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/clicked" hx-swap="outerHTML">Click Me</button>
+```
+
+----------------------------------------
+
+TITLE: HTMX Target Example
+DESCRIPTION: Demonstrates using hx-target to specify a CSS selector for the response content. The input element triggers a GET request, and the results are loaded into the div with id 'search-results'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_20
+
+LANGUAGE: html
+CODE:
+```
+<input type="text" name="q"
+    hx-get="/trigger_delay"
+    hx-trigger="keyup delay:500ms changed"
+    hx-target="#search-results"
+    placeholder="Search...">
+<div id="search-results"></div>
+```
+
+----------------------------------------
+
+TITLE: Install HTMX using npm
+DESCRIPTION: Shows the command to install the HTMX library using the npm package manager.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_5
+
+LANGUAGE: sh
+CODE:
+```
+npm install htmx.org@2.0.6
+```
+
+----------------------------------------
+
+TITLE: JavaScript Job Manager Simulation
+DESCRIPTION: A simple JavaScript module simulating job management. It provides functions to start a new job and update its progress, mimicking real-world job execution.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_9
+
+LANGUAGE: javascript
+CODE:
+```
+var jobManager = (function(){
+      var currentProcess = null;
+      return {
+        start : function() {
+          currentProcess = {
+            complete : false,
+            percentComplete : 0
+          }
+          return currentProcess;
+        },
+        currentProcess : function() {
+          currentProcess.percentComplete += Math.min(100, Math.floor(33 * Math.random()));  // simulate progress
+          currentProcess.complete = currentProcess.percentComplete >= 100;
+          return currentProcess;
+        }
+      }
+    })();
+```
+
+----------------------------------------
+
+TITLE: Unpoly Configuration Example
+DESCRIPTION: Demonstrates how Unpoly can be configured globally to handle all links and forms without requiring individual HTML modifications. This highlights Unpoly's convention-over-configuration approach, similar to Ruby on Rails.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/henning_koch.md#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+up.compiler('body', {
+  // Configure Unpoly to handle all links and forms by default
+  link: true,
+  form: true
+});
+```
+
+----------------------------------------
+
+TITLE: Vendoring Recommendation - fixi
+DESCRIPTION: The fixi project, a minimal htmx alternative, recommends vendoring the software into your own project as the primary installation mechanism.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/vendoring.md#_snippet_10
+
+LANGUAGE: English
+CODE:
+```
+https://github.com/bigskysoftware/fixi#installing
+```
+
+----------------------------------------
+
+TITLE: JavaScript Mock Server for Tab Content
+DESCRIPTION: This JavaScript code simulates server responses for different tab content requests. It uses a `onGet` function to define the content returned for specific URL paths (`/tab1`, `/tab2`, `/tab3`), allowing the HTMX example to fetch and display dynamic content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/tabs-javascript.md#_snippet_1
+
+LANGUAGE: javascript
+CODE:
+```
+onGet("/tab1", function() {
+		return "\n\t\t\t<p>Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.\n			Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.\n			Polaroid duis occaecat narwhal small batch food truck.\n			PBR&B venmo shaman small batch you probably haven't heard of them hot chicken readymade.\n			Enim tousled cliche woke, typewriter single-origin coffee hella culpa.\n			Art party readymade 90's, asymmetrical hell of fingerstache ipsum.</p>\n\t	";
+	});
+onGet("/tab2", function() {
+		return "\n\t\t\t<p>Kitsch fanny pack yr, farm-to-table cardigan cillum commodo reprehenderit plaid dolore cronut meditation.\n			Tattooed polaroid veniam, anim id cornhole hashtag sed forage.\n			Microdosing pug kitsch enim, kombucha pour-over sed irony forage live-edge.\n			Vexillologist eu nulla trust fund, street art blue bottle selvage raw denim.\n			Dolore nulla do readymade, est subway tile affogato hammock 8-bit.\n			Godard elit offal pariatur you probably haven't heard of them post-ironic.\n			Prism street art cray salvia.</p>\n\t	"
+	});
+onGet("/tab3", function() {
+		return "\n\t\t\t<p>Aute chia marfa echo park tote bag hammock mollit artisan listicle direct trade.\n			Raw denim flexitarian eu godard etsy.\n			Poke tbh la croix put a bird on it fixie polaroid aute cred air plant four loko gastropub swag non brunch.\n			Iceland fanny pack tumeric magna activated charcoal bitters palo santo laboris quis consectetur cupidatat portland aliquip venmo.</p>\n\t	"
+	});
+```
+
+----------------------------------------
+
+TITLE: Install htmx Dependencies
+DESCRIPTION: Installs the necessary Node.js packages for developing htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/CONTRIBUTING.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm install
+```
+
+----------------------------------------
+
+TITLE: HTMX Search Input Example
+DESCRIPTION: An example of a search input using HTMX. It triggers a GET request on the 'input' event, but only if the search value has changed and after a 1-second delay. The results are appended to the element with id 'search-results'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-trigger.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<input name="q"
+       hx-get="/search" hx-trigger="input changed delay:1s"
+       hx-target="#search-results"/>
+```
+
+----------------------------------------
+
+TITLE: HTTP Request with Cookie
+DESCRIPTION: Shows an example of an HTTP GET request where the browser automatically includes the previously set authentication cookie.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/web-security-basics-with-htmx.md#_snippet_6
+
+LANGUAGE: http
+CODE:
+```
+GET /users HTTP/1.1
+Host: yourdomain.com
+Cookie: token=asd8234nsdfp982
+```
+
+----------------------------------------
+
+TITLE: Mock Server Response for Demo
+DESCRIPTION: Configures a mock server to respond to GET requests on '/demo' with a unique request count and a random string. This simulates dynamic server responses.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/scratch/scratch.html#_snippet_2
+
+LANGUAGE: javascript
+CODE:
+```
+let requestCount = 0;
+this.server.respondWith("GET", "/demo", function(xhr){
+  let randomStr = (Math.random() + 1).toString(36).substring(7);
+  xhr.respond(200, {}, "Request #" + requestCount++ + " : " + randomStr)
+});
+```
+
+----------------------------------------
+
+TITLE: Example HTML API Response
+DESCRIPTION: Demonstrates a hypermedia-formatted API response in HTML, including data and hypermedia controls (links) for navigation.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/two-approaches-to-decoupling.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<html>
+  <body>
+    <div>Account number: 12345</div>
+    <div>Balance: $100.00 USD</div>
+    <div>Links:
+        <a href="/accounts/12345/deposits">deposits</a>
+        <a href="/accounts/12345/withdrawals">withdrawals</a>
+        <a href="/accounts/12345/transfers">transfers</a>
+        <a href="/accounts/12345/close-requests">close-requests</a>
+    </div>
+  <body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: SIP Protocol Example
+DESCRIPTION: An example of a non-RESTful protocol (SIP) used in public libraries for tracking loans, highlighting its value despite not using Web technologies.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/leonard_richardson.md#_snippet_7
+
+LANGUAGE: text
+CODE:
+```
+Would it be RESTful? Nope! But again I'll come back to SIP, the integration protocol that public libraries use to keep track of loans. SIP is a level zero protocol! It doesn't use any of the Web technologies at all! But it provides architectural properties that libraries value and vendor-centric solutions can't offer–mainly interoperability–so it sticks around despite the presence of "RESTful" solutions.
+```
+
+----------------------------------------
+
+TITLE: HTMX AJAX Request Example
+DESCRIPTION: This snippet demonstrates a basic AJAX GET request using HTMX. The `hx-get` attribute specifies the URL to fetch, and `hx-target` indicates the element where the response should be placed. The `hx-swap` attribute defines how the response content replaces the target content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/_index.md#_snippet_4
+
+LANGUAGE: html
+CODE:
+```
+<button hx-get="/load-content" hx-target="#content" hx-swap="innerHTML">
+  Load Content
+</button>
+
+<div id="content">
+  <!-- Content will be loaded here -->
+</div>
+```
+
+----------------------------------------
+
+TITLE: Install htmx via npm
+DESCRIPTION: Provides instructions for installing the htmx library as a dependency in a Node.js project using npm.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/README.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+npm install htmx.org --save
+```
+
+----------------------------------------
+
+TITLE: Mock Server Response for Demo
+DESCRIPTION: Configures a mock server to respond to GET requests on '/demo' with a unique request count and a random string. This simulates dynamic server responses.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/scratch/scratch.html#_snippet_2
+
+LANGUAGE: javascript
+CODE:
+```
+let requestCount = 0;
+this.server.respondWith("GET", "/demo", function(xhr){
+  let randomStr = (Math.random() + 1).toString(36).substring(7);
+  xhr.respond(200, {}, "Request #" + requestCount++ + " : " + randomStr)
+});
+```
+
+----------------------------------------
+
+TITLE: Vendoring Recommendation - Facet
+DESCRIPTION: The Facet project, an HTML-oriented Web Component library, recommends vendoring the software into your own project as the primary installation mechanism.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/vendoring.md#_snippet_9
+
+LANGUAGE: English
+CODE:
+```
+https://github.com/kgscialdone/facet#installation
+```
+
+----------------------------------------
+
+TITLE: FreePascal HTMX Application
+DESCRIPTION: An example of creating an HTMX application using FreePascal with Pas2JS.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/server-examples.md#_snippet_3
+
+LANGUAGE: FreePascal
+CODE:
+```
+// Example of creating an HTMX app with FreePascal and Pas2JS
+// See: https://github.com/zendrael/create_htmx_pascal_app
+```
+
+----------------------------------------
+
+TITLE: Delphi HTMX Integration
+DESCRIPTION: Showcases HTMX integration with Delphi using the DelphiMVCFramework. Includes a ToDo application example.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/server-examples.md#_snippet_2
+
+LANGUAGE: Delphi
+CODE:
+```
+// DelphiMVCFramework HTMX ToDo example
+// See: https://github.com/danieleteti/delphi-dmvcframework-htmx-todo
+```
+
+LANGUAGE: Delphi
+CODE:
+```
+// DelphiMVCFramework HTMX samples
+// See: https://github.com/danieleteti/delphimvcframework/tree/master/samples/htmx
+```
+
+----------------------------------------
+
+TITLE: Install htmx-1-compat via CDN
+DESCRIPTION: This snippet shows how to install the htmx-1-compat extension using a Content Delivery Network (CDN). It includes the core htmx library and the extension, ensuring proper loading order.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/htmx-1-compat.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-htmx-1-compat@2.0.0" integrity="sha384-lcvVWaNjF5zPPUeeWmC0OkJ2MLqoWLlkAabuGm+EuMSTfGo5WRyHrNaAp0cJr9Pg" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="htmx-1-compat">
+...
+```
+
+----------------------------------------
+
+TITLE: Base HTML Template Structure
+DESCRIPTION: This snippet shows the basic Jinja2 template structure for an htmx example page. It extends a base template, sets the page title and description, and defines the main content block. It includes logic for conditionally displaying a title based on page configuration.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/templates/demo.html#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+{% extends "htmx-theme/templates/base.html" %}
+{% block title %} {% set html_title = "</> htmx ~ Examples ~ " ~ page.title %} {% endblock title %}
+{% block description %} {%- if page.description -%} {{- page.description | safe -}} {%- else -%} {{- super() -}} {%- endif -%} {% endblock description %}
+{% block content %} {% if page.extra and page.extra.show_title is defined %} {% set show_title = page.extra.show_title %} {% else %} {% set show_title = true %} {% endif %}
+{% if show_title %}
+
+{{ page.title | safe }}
+=======================
+
+{% endif %} {{ page.content | safe }}
+{% endblock content %}
+```
+
+----------------------------------------
+
+TITLE: Server-Side Caching Example
+DESCRIPTION: This snippet highlights the importance of server-side caching for improving web application performance. It references Rails caching as an example, suggesting that mature server-side frameworks offer tools to achieve fast response times.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_0
+
+LANGUAGE: markdown
+CODE:
+```
+Many older web frameworks have
+incredibly deep functionality available around producing HTML.  Features like 
+[server-side caching](https://guides.rubyonrails.org/caching_with_rails.html) can make the difference between an incredibly 
+snappy web application and a sluggish user experience.
+```
+
+----------------------------------------
+
+TITLE: Install HTMX Extension via npm
+DESCRIPTION: Illustrates the command to install an HTMX extension using npm, which is suitable for projects using npm-style build systems.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_61
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-extension-name
+```
+
+----------------------------------------
+
+TITLE: Test Scroll Behavior Setup
+DESCRIPTION: Sets up a test server for HTMX, enabling auto-response and defining a response for GET requests to '/more_divs'. This is used to test scroll behavior and dynamic content loading.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/poll-condition-test.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: PJAX Usage Example
+DESCRIPTION: Demonstrates how to use PJAX to enhance navigation by loading content via Ajax without a full page reload. It shows how to target links for PJAX requests and how the backend should respond.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/chris_wanstrath.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<a href="/users/1" data-pjax=".content">View User Profile</a>
+
+<div class="content">
+  <!-- Content will be loaded here -->
+</div>
+```
+
+LANGUAGE: javascript
+CODE:
+```
+/*
+PJAX Initialization (example):
+
+$(document).ready(function() {
+  $("body").pjax({
+    selector: "a[data-pjax]",
+    container: ".content"
+  });
+});
+*/
+```
+
+----------------------------------------
+
+TITLE: Install HTMX Extension via CDN
+DESCRIPTION: Demonstrates how to include the core htmx library and an extension (e.g., response-targets) from a CDN in the HTML head.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_59
+
+LANGUAGE: HTML
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
+</head>
+```
+
+----------------------------------------
+
+TITLE: Test Scroll Behavior Setup
+DESCRIPTION: Sets up a test server for HTMX, enabling auto-response and defining a response for GET requests to '/more_divs'. This is used to test scroll behavior and dynamic content loading.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/poll-condition-test.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: Scroll Event Handler Setup
+DESCRIPTION: Sets up a server to respond to GET requests for '/more_content' with specific HTML. This is used to test the remote loading of content triggered by scrolling.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/scroll-test-eventHandler.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer(); server.autoRespond = true; server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+```
+
+----------------------------------------
+
+TITLE: Hyperwordle Example
+DESCRIPTION: Demonstrates a hyperscript-based clone of Wordle, showcasing the 'View Source' capability enabled by the Locality of Behavior principle.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/right-click-view-source.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<img src="/img/memes/viewsource.png" alt="Right Click View Source Guy" style="border-radius: 12px; margin: 12px">
+```
+
+----------------------------------------
+
+TITLE: HTMX Restart Button Template
+DESCRIPTION: Conditionally renders a 'Restart Job' button if the job is complete. The button uses HTMX to trigger a POST request to start a new job.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_8
+
+LANGUAGE: javascript
+CODE:
+```
+function restartButton(job) {
+      if(job.complete){
+        return `
+<button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
+  Restart Job
+</button>`
+      } else {
+        return "";
+      }
+    }
+```
+
+----------------------------------------
+
+TITLE: Select Specific Content with hx-select
+DESCRIPTION: This example demonstrates how to use the `hx-select` attribute to target a specific element (`#info-detail`) from the response of a GET request to `/info`. The selected content will then replace the button element itself.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-select.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div>
+    <button hx-get="/info" hx-select="#info-detail" hx-swap="outerHTML">
+        Get Info!
+    </button>
+</div>
+```
+
+----------------------------------------
+
+TITLE: YouTube Embed Example
+DESCRIPTION: An example of embedding a YouTube video using an iframe element. This snippet demonstrates how to include external video content within a webpage.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/a-real-world-nextjs-to-htmx-port.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<iframe style="max-width: 100%" width="618" height="352" src="https://www.youtube.com/embed/8RL4NvYZDT4" title=" Next.js to htmx – A Real World Example " frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
+----------------------------------------
+
+TITLE: htmx Active Search Example
+DESCRIPTION: Demonstrates an active search pattern using htmx attributes directly within HTML. This example shows how user input triggers an HTTP POST request, and the returned HTML is dynamically inserted into the DOM, mimicking SPA behavior within an MPA context.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-driven-applications.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<h3> 
+  Search Contacts 
+  <span class="htmx-indicator"> 
+    <img src="/img/bars.svg"/> Searching... 
+   </span> 
+</h3>
+<input class="form-control" type="search" 
+       name="search" placeholder="Begin Typing To Search Users..." 
+       hx-post="/search" 
+       hx-trigger="keyup changed delay:500ms, search" 
+       hx-target="#search-results" 
+       hx-indicator=".htmx-indicator">
+
+<table class="table">
+    <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+    </tr>
+    </thead>
+    <tbody id="search-results">
+    </tbody>
+</table>
+```
+
+----------------------------------------
+
+TITLE: Scroll Event Handler Setup
+DESCRIPTION: Sets up a server to respond to GET requests for '/more_content' with specific HTML. This is used to test the remote loading of content triggered by scrolling.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/scroll-test-eventHandler.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer(); server.autoRespond = true; server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+```
+
+----------------------------------------
+
+TITLE: Run htmx.org Website Locally
+DESCRIPTION: This snippet demonstrates the commands needed to serve the htmx.org website locally. It assumes Zola is installed and navigates to the correct directory.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/README.md#_snippet_0
+
+LANGUAGE: shell
+CODE:
+```
+cd www
+zola serve
+```
+
+----------------------------------------
+
+TITLE: HTMX Trigger with 'delay' and 'changed' Modifiers
+DESCRIPTION: An example of an input field that triggers a GET request to '/trigger_delay' after a 500ms delay if the input value has changed, updating the '#search-results' div.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_11
+
+LANGUAGE: html
+CODE:
+```
+<input type="text" name="q"
+    hx-get="/trigger_delay"
+    hx-trigger="keyup changed delay:500ms"
+    hx-target="#search-results"
+    placeholder="Search...">
+<div id="search-results"></div>
+```
+
+----------------------------------------
+
+TITLE: JavaScript Tab Content Handling
+DESCRIPTION: This JavaScript code defines functions to handle GET requests for different tab contents. Each `onGet` function returns the HTML for a specific tab, including the updated tab list with the correct selected state and the corresponding content. This enables dynamic loading of tab content via HTMX.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/tabs-hateoas.md#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+onGet("/tab1", function() {
+		return "\n\t\t<div class=\"tab-list\" role=\"tablist\">
+			<button hx-get=\"/tab1\" class=\"selected\" aria-selected=\"true\" autofocus role=\"tab\" aria-controls=\"tab-content\">Tab 1</button>
+			<button hx-get=\"/tab2\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 2</button>
+			<button hx-get=\"/tab3\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 3</button>
+		</div>\n\n		<div id=\"tab-content\" role=\"tabpanel\" class=\"tab-content\">
+			Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.
+			Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.
+			Polaroid duis occaecat narwhal small batch food truck.
+			PBR&B venmo shaman small batch you probably haven't heard of them hot chicken readymade.
+			Enim tousled cliche woke, typewriter single-origin coffee hella culpa.
+			Art party readymade 90's, asymmetrical hell of fingerstache ipsum.
+		</div>"
+	})
+
+	onGet("/tab2", function() {
+		return "\n\t\t<div class=\"tab-list\" role=\"tablist\">
+			<button hx-get=\"/tab1\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 1</button>
+			<button hx-get=\"/tab2\" class=\"selected\" aria-selected=\"true\" autofocus role=\"tab\" aria-controls=\"tab-content\">Tab 2</button>
+			<button hx-get=\"/tab3\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 3</button>
+		</div>\n\n		<div id=\"tab-content\" role=\"tabpanel\" class=\"tab-content\">
+			Kitsch fanny pack yr, farm-to-table cardigan cillum commodo reprehenderit plaid dolore cronut meditation.
+			Tattooed polaroid veniam, anim id cornhole hashtag sed forage.
+			Microdosing pug kitsch enim, kombucha pour-over sed irony forage live-edge.
+			Vexillologist eu nulla trust fund, street art blue bottle selvage raw denim.
+			Dolore nulla do readymade, est subway tile affogato hammock 8-bit.
+			Godard elit offal pariatur you probably haven't heard of them post-ironic.
+			Prism street art cray salvia.
+		</div>"
+	})
+
+	onGet("/tab3", function() {
+		return "\n\t\t<div class=\"tab-list\" role=\"tablist\">
+			<button hx-get=\"/tab1\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 1</button>
+			<button hx-get=\"/tab2\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tab-content\">Tab 2</button>
+			<button hx-get=\"/tab3\" class=\"selected\" aria-selected=\"true\" autofocus role=\"tab\" aria-controls=\"tab-content\">Tab 3</button>
+		</div>\n\n		<div id=\"tab-content\" role=\"tabpanel\" class=\"tab-content\">
+			Aute chia marfa echo park tote bag hammock mollit artisan listicle direct trade.
+			Raw denim flexitarian eu godard etsy.
+			Poke tbh la croix put a bird on it fixie polaroid aute cred air plant four loko gastropub swag non brunch.
+			Iceland fanny pack tumeric magna activated charcoal bitters palo santo laboris quis consectetur cupidatat portland aliquip venmo.
+		</div>"
+	})
+
+</script>
+```
