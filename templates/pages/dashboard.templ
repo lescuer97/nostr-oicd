@@ -1,0 +1,19 @@
+package pages
+
+import "github.com/lescuer97/nostr-oicd/templates/layouts"
+
+templ DashboardPage(user string) {
+	@layout.Base(user, "Dashboard", dashboardContent(user))
+}
+
+templ dashboardContent(user string) {
+	<div class="bg-white p-6 rounded shadow">
+		<h1 class="text-2xl font-bold mb-4">Welcome</h1>
+		<p class="mb-4">You are signed in as <strong>{ user }</strong></p>
+		<div class="space-y-2">
+			<form hx-post="/api/auth/logout" hx-target="body" hx-swap="outerHTML">
+				<button type="submit" class="text-sm text-red-500">Logout</button>
+			</form>
+		</div>
+	</div>
+}
