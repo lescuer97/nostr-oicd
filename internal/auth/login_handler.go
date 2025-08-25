@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/lescuer97/nostr-oicd/internal/config"
 	"github.com/lescuer97/nostr-oicd/internal/models"
+	"github.com/lescuer97/nostr-oicd/templates/fragments"
 	"github.com/nbd-wtf/go-nostr"
 )
 
@@ -31,47 +33,58 @@ func hmacHash(key []byte, data string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// renderLoginError renders the LoginError fragment with the given message.
+func renderLoginError(ctx context.Context, w http.ResponseWriter, msg string) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_ = fragments.LoginError(msg).Render(ctx, w)
+}
+
 // LoginHandler handles signed nostr event login. It receives the app config and DB via closure
 func LoginHandler(cfg *config.Config, db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	// Expect signed_event in POST form
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, "invalid request", http.StatusBadRequest)
+		renderLoginError(ctx, w, "invalid request")
 		return
 	}
 	signed := r.FormValue("signed_event")
 	if signed == "" {
-		http.Error(w, "missing signed_event", http.StatusBadRequest)
+		renderLoginError(ctx, w, "missing signed_event")
 		return
 	}
 	// Parse signed event JSON
 	var ev nostr.Event
 	if err := json.Unmarshal([]byte(signed), &ev); err != nil {
-		http.Error(w, "invalid event", http.StatusBadRequest)
+		renderLoginError(ctx, w, "invalid event")
 		return
 	}
 	// Validate signature using event method
 	ok, err := ev.CheckSignature()
-	if err != nil || !ok {
-		http.Error(w, "signature verification failed", http.StatusUnauthorized)
+	if err != nil {
+		renderLoginError(ctx, w, "invalid signature")
+		return
+	}
+	if !ok {
+		renderLoginError(ctx, w, "signature verification failed")
 		return
 	}
 	// The event content should be the challenge
 	challenge := ev.Content
 	if !ValidateAndDeleteChallenge(challenge) {
-		http.Error(w, "invalid or expired challenge", http.StatusUnauthorized)
+		renderLoginError(ctx, w, "invalid or expired challenge")
 		return
 	}
 	// Ensure user exists
-	userID, err := models.EnsureUser(r.Context(), db, ev.PubKey)
+	userID, err := models.EnsureUser(ctx, db, ev.PubKey)
 	if err != nil {
-		http.Error(w, "failed to create user", http.StatusInternalServerError)
+		renderLoginError(ctx, w, "failed to create user")
 		return
 	}
 
 	// Generate an opaque session token (random) and store its HMAC in DB
 	token, err := generateRandomToken(32) // 32 bytes -> 64 hex chars
 	if err != nil {
-		http.Error(w, "failed to generate token", http.StatusInternalServerError)
+		renderLoginError(ctx, w, "failed to generate token")
 		return
 	}
 	// Use SESSION_SIGNING_KEY if provided, else fallback to JWT secret
@@ -82,8 +95,8 @@ func LoginHandler(cfg *config.Config, db *sql.DB, w http.ResponseWriter, r *http
 	hash := hmacHash(signKey, token)
 
 	expiresAt := time.Now().Add(15 * time.Minute)
-	if _, err := models.CreateSession(r.Context(), db, userID, hash, expiresAt); err != nil {
-		http.Error(w, "failed to create session", http.StatusInternalServerError)
+	if _, err := models.CreateSession(ctx, db, userID, hash, expiresAt); err != nil {
+		renderLoginError(ctx, w, "failed to create session")
 		return
 	}
 
@@ -98,7 +111,10 @@ func LoginHandler(cfg *config.Config, db *sql.DB, w http.ResponseWriter, r *http
 		Expires:  expiresAt,
 	})
 
-	// Return success fragment (simple text for now)
+	// Render login success fragment
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte("<div class=\"p-4 bg-green-100\">Logged in</div>"))
+	if err := fragments.LoginSuccess().Render(ctx, w); err != nil {
+		// As a fallback, write plain text
+		http.Error(w, "failed to render fragment", http.StatusInternalServerError)
+	}
 }
