@@ -11,28 +11,27 @@ import (
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	"github.com/lescuer97/nostr-oicd/internal/auth"
+	"github.com/lescuer97/nostr-oicd/internal/config"
 	"github.com/lescuer97/nostr-oicd/internal/database"
 	pages "github.com/lescuer97/nostr-oicd/templates/pages"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	// Load env from .env if present (optional)
-	// For now, rely on environment variables
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	// Load .env file if present (silent if missing)
+	if err := godotenv.Load(); err != nil {
+		log.Printf(".env not loaded (if running in prod this is expected): %v", err)
+	} else {
+		log.Print("loaded .env file")
 	}
 
-	dbPath := os.Getenv("DATABASE_PATH")
-	if dbPath == "" {
-		dbPath = "./database/dev.sqlite3"
-	}
+	// Load config from environment
+	cfg := config.LoadFromEnv()
 
 	// Open DB using our helper
-	db, err := database.Open(dbPath)
+	db, err := database.Open(cfg.DatabasePath)
 	if err != nil {
 		log.Fatalf("failed to open database: %v", err)
 	}
@@ -55,7 +54,7 @@ func main() {
 	}))
 
 	// Register auth routes
-	auth.RegisterRoutes(r, db)
+	auth.RegisterRoutes(r, cfg, db)
 
 	// Static file server
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
@@ -71,7 +70,7 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr:    ":" + port,
+		Addr:    ":" + cfg.Port,
 		Handler: r,
 	}
 

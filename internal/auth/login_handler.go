@@ -5,23 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/lescuer97/nostr-oicd/internal/config"
 	"github.com/lescuer97/nostr-oicd/internal/models"
 	"github.com/nbd-wtf/go-nostr"
 )
 
-var jwtSecret = []byte("replace-me")
-
-func init() {
-	if s := os.Getenv("JWT_SECRET"); s != "" {
-		jwtSecret = []byte(s)
-	}
-}
-
-func LoginHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+// LoginHandler handles signed nostr event login. It receives the app config and DB via closure
+func LoginHandler(cfg *config.Config, db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	// Expect signed_event in POST form
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "invalid request", http.StatusBadRequest)
@@ -65,7 +58,7 @@ func LoginHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		"sub": ev.PubKey,
 		"exp": time.Now().Add(15 * time.Minute).Unix(),
 	})
-	tokenStr, err := token.SignedString(jwtSecret)
+	tokenStr, err := token.SignedString([]byte(cfg.JWTSecret))
 	if err != nil {
 		http.Error(w, "failed to sign token", http.StatusInternalServerError)
 		return
@@ -78,20 +71,12 @@ func LoginHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Set cookie
-	cookieName := os.Getenv("COOKIE_NAME")
-	if cookieName == "" {
-		cookieName = "nostr_oicd_session"
-	}
-	secure := false
-	if os.Getenv("COOKIE_SECURE") == "true" {
-		secure = true
-	}
 	http.SetCookie(w, &http.Cookie{
-		Name:     cookieName,
+		Name:     cfg.CookieName,
 		Value:    tokenStr,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   secure, // set via env
+		Secure:   cfg.CookieSecure,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	})
