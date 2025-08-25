@@ -11,10 +11,39 @@ Development notes
 Environment
 
 - Copy `.env.example` to `.env` and update secrets (JWT_SECRET, DATABASE_PATH, COOKIE_*).
+- The server will load a `.env` file automatically when present. For production, prefer platform-managed environment variables or secrets stores.
 
-Dev run
+Dev run (local development)
 
-1. (Optional) Install templ: `go install github.com/a-h/templ/cmd/templ@latest`
-2. Generate templ code: `templ generate`
-3. Run the server: `go run ./cmd/server`
+1. Copy the example env file and edit values:
+
+```sh
+cp .env.example .env
+# edit .env to set JWT_SECRET and other vars
+```
+
+2. (Optional) Install templ generator if you edit templ files:
+
+```sh
+go install github.com/a-h/templ/cmd/templ@latest
+```
+
+3. Generate templ Go code (if needed):
+
+```sh
+templ generate
+```
+
+4. Run the server (CGO required for mattn/go-sqlite3):
+
+```sh
+# Ensure CGO is enabled if using mattn/go-sqlite3
+CGO_ENABLED=1 go run ./cmd/server
+```
+
+Notes & tips
+
+- If you don't want to use a `.env` file, set environment variables directly (e.g., in your shell, systemd unit, or container runtime).
+- The app will run migrations from `./database/migrations` at startup. Back up your DB before running in production.
+- For CI, ensure `templ generate` is run or that the templ CLI is available.
 
