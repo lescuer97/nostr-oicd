@@ -11,7 +11,6 @@ npm-debug.log
 *.dll
 *.so
 *.dylib
-server
 *.out
 
 # IDE files
@@ -31,8 +30,6 @@ build/
 .env.local
 .env.production
 
-# Template generated files
-internal/web/templates/*.templ.go
 
 # Go workspace
 go.work
@@ -61,5 +58,4 @@ go.sum
 Thumbs.db
 ehthumbs.db
 # Generated templ files
-*.templ.go
 *_templ.go

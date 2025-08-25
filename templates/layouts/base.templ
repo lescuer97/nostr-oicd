@@ -1,10 +1,8 @@
 package layout
 
-import "github.com/a-h/templ"
-
 // Base layout component. `contents` is a templ.Component passed in by pages.
-templ Base(user interface{}, title string, contents templ.Component) {
-	<!doctype html>
+// user is a string containing the user's public key or empty when unauthenticated.
+templ Base(user string, title string, contents templ.Component) {
 	<html lang="en">
 		<head>
 			<meta charset="utf-8" />
@@ -22,7 +20,7 @@ templ Base(user interface{}, title string, contents templ.Component) {
 							</div>
 						</div>
 						<div class="flex items-center">
-							if user {
+							if user != "" {
 								<span class="mr-4">{ user }</span>
 								<a href="/api/auth/logout" class="text-sm text-red-500">Logout</a>
 							} else {
