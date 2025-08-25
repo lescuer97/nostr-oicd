@@ -1,9 +1,0 @@
-CREATE TABLE sessions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  session_id TEXT UNIQUE NOT NULL,
-  user_id INTEGER REFERENCES users(id),
-  client TEXT NOT NULL,
-  active BOOLEAN DEFAULT TRUE,
-  creation_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-  expiry_timestamp DATETIME NOT NULL
-);

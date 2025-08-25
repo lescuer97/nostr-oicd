@@ -1,9 +1,0 @@
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  public_key_hex TEXT UNIQUE NOT NULL,
-  display_name TEXT,
-  is_admin BOOLEAN DEFAULT FALSE,
-  active BOOLEAN DEFAULT TRUE,
-  creation_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-  deletion_timestamp DATETIME NULL
-);
