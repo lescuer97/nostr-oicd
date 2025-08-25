@@ -4,10 +4,9 @@
   - [ ] Create directories (cmd/, internal/{auth,handlers,middleware,models,database}, templates/{components,layouts,pages}, static/{css,js}, database/migrations)
   - [ ] Create README.md and LICENSE
 - [ ] Step 2: Set up dependencies and tools
-  - [ ] go mod init github.com/your-username/nostr-oicd
-  - [ ] Add Go dependencies (chi, cors, jwt/v5, templ, modernc.org/sqlite, go-nostr)
-  - [ ] Install templ CLI
-  - [ ] Initialize npm and tailwind
+  - [ ] go mod init github.com/lescuer97/nostr-oicd
+  - [ ] Add Go dependencies (chi, cors, jwt/v5, templ, mattn/go-sqlite3, go-nostr)
+  - [ ] Install templ CLI (optional)
 - [ ] Step 3: Database schema and models
   - [ ] Add SQL migrations for users and sessions
   - [ ] Implement internal/database package to run migrations and provide DB handle
@@ -31,15 +30,14 @@
   - [ ] Page handlers (/, /login, /signup, /dashboard)
   - [ ] API handlers (GET /api/auth/challenge, POST /api/auth/login, POST /api/auth/signup, POST /api/auth/logout, GET /api/auth/status)
 - [ ] Step 9: Static file serving and CSS build
-  - [ ] Configure tailwind config to scan .templ files
-  - [ ] Add npm scripts for build and watch
+  - [ ] Use Tailwind Play CDN in templates (no local build required)
   - [ ] Serve /static/ with correct cache headers in production
 - [ ] Step 10: Server setup and routing
   - [ ] Implement cmd/server/main.go with Chi router and middleware
   - [ ] Add graceful shutdown and logging
 - [ ] Step 11: Template compilation and build process
-  - [ ] Add templ generate script to build step
-  - [ ] Add a development script to run templ/tailwind/go server concurrently
+  - [ ] Add templ generate script to build step (optional)
+  - [ ] Add a development script to run templ/go server concurrently
 - [ ] Step 12: UI design
   - [ ] Implement Tailwind styles for login/signup/dashboard
 - [ ] Step 13: Error handling & validation
