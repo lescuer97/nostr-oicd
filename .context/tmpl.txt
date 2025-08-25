@@ -1,0 +1,2050 @@
+========================
+CODE SNIPPETS
+========================
+TITLE: Start templ Development Shell with Nix
+DESCRIPTION: Launches a development shell environment using Nix that includes all necessary tools for building 'templ', such as Go and 'gopls'.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_3
+
+LANGUAGE: bash
+CODE:
+```
+nix develop github:a-h/templ
+```
+
+----------------------------------------
+
+TITLE: Multi-stage Dockerfile for templ Applications
+DESCRIPTION: Provides a multi-stage Dockerfile example for building applications that use 'templ'. It includes stages for fetching Go modules, generating templ code, building the Go application, running tests, and creating a minimal deployable image. Emphasizes using the 'exec' form for 'RUN' commands due to the minimal 'templ' container.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_7
+
+LANGUAGE: dockerfile
+CODE:
+```
+# Fetch
+FROM golang:latest AS fetch-stage
+COPY go.mod go.sum /app
+WORKDIR /app
+RUN go mod download
+
+# Generate
+FROM ghcr.io/a-h/templ:latest AS generate-stage
+COPY --chown=65532:65532 . /app
+WORKDIR /app
+RUN ["templ", "generate"]
+
+# Build
+FROM golang:latest AS build-stage
+COPY --from=generate-stage /app /app
+WORKDIR /app
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/app
+
+# Test
+FROM build-stage AS test-stage
+RUN go test -v ./...
+
+# Deploy
+FROM gcr.io/distroless/base-debian12 AS deploy-stage
+WORKDIR /
+COPY --from=build-stage /app/app /app
+EXPOSE 8080
+USER nonroot:nonroot
+ENTRYPOINT ["/app"]
+```
+
+----------------------------------------
+
+TITLE: Install templ Globally with Go
+DESCRIPTION: Installs the 'templ' command-line tool globally on your system using 'go install'. Requires Go 1.24 or greater and adds 'templ' to your system's PATH.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+go install github.com/a-h/templ/cmd/templ@latest
+```
+
+----------------------------------------
+
+TITLE: Install templ as a Local Go Tool
+DESCRIPTION: Installs 'templ' as a project-local tool using 'go get -tool'. This method leverages Go's tool directive feature (v1.24+) and requires running 'go tool templ' to execute the command.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+go get -tool github.com/a-h/templ/cmd/templ@latest
+```
+
+----------------------------------------
+
+TITLE: Run templ with Nix
+DESCRIPTION: Executes the 'templ' binary directly using Nix without a full installation, leveraging the provided Nix flake.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_2
+
+LANGUAGE: bash
+CODE:
+```
+nix run github:a-h/templ
+```
+
+----------------------------------------
+
+TITLE: Go Application Entrypoint and HTTP Server Setup
+DESCRIPTION: This `main` function initializes and wires together the application's dependencies, including the database store, count service, and HTTP handlers. It configures and starts an HTTP server, applying session management middleware. Environment variables are used for configuration.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/07-project-structure/01-project-structure.md#_snippet_5
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/a-h/templ/examples/counter/db"
+	"github.com/a-h/templ/examples/counter/handlers"
+	"github.com/a-h/templ/examples/counter/services"
+	"github.com/a-h/templ/examples/counter/session"
+	"golang.org/x/exp/slog"
+)
+
+func main() {
+	log := slog.New(slog.NewJSONHandler(os.Stderr))
+	s, err := db.NewCountStore(os.Getenv("TABLE_NAME"), os.Getenv("AWS_REGION"))
+	if err != nil {
+		log.Error("failed to create store", slog.Any("error", err))
+		os.Exit(1)
+	}
+	cs := services.NewCount(log, s)
+	h := handlers.New(log, cs)
+
+	var secureFlag = true
+	if os.Getenv("SECURE_FLAG") == "false" {
+		secureFlag = false
+	}
+
+	// Add session middleware.
+	sh := session.NewMiddleware(h, session.WithSecure(secureFlag))
+
+	server := &http.Server{
+		Addr:         "localhost:9000",
+		Handler:      sh,
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
+	}
+
+	fmt.Printf("Listening on %v\n", server.Addr)
+	server.ListenAndServe()
+}
+```
+
+----------------------------------------
+
+TITLE: Run templ Docker Container to Generate Code
+DESCRIPTION: Executes the 'templ' Docker container, mounting the current directory as '/app' and setting it as the working directory, then runs 'templ generate' to process templates.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_6
+
+LANGUAGE: bash
+CODE:
+```
+docker run -v `pwd`:/app -w=/app ghcr.io/a-h/templ:latest generate
+```
+
+----------------------------------------
+
+TITLE: Run GoFiber Application
+DESCRIPTION: Starts the GoFiber web server, making the application accessible via HTTP. The server will listen on localhost:3000.
+
+SOURCE: https://github.com/a-h/templ/blob/main/examples/integration-gofiber/README.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+go run .
+```
+
+----------------------------------------
+
+TITLE: Install project dependencies
+DESCRIPTION: Installs all required project dependencies using Yarn. This command prepares the environment for development and building.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/README.md#_snippet_0
+
+LANGUAGE: Shell
+CODE:
+```
+$ yarn
+```
+
+----------------------------------------
+
+TITLE: Build and Install Current templ Snapshot
+DESCRIPTION: This command sequence builds and installs the current development version of 'templ'. It includes steps to clean up previous installations, clear LSP logs, update the version, and then install the binary to the Go path.
+
+SOURCE: https://github.com/a-h/templ/blob/main/README.md#_snippet_2
+
+LANGUAGE: Shell
+CODE:
+```
+# Remove templ from the non-standard ~/bin/templ path
+# that this command previously used.
+rm -f ~/bin/templ
+# Clear LSP logs.
+rm -f cmd/templ/lspcmd/*.txt
+# Update version.
+version set --template="0.3.%d"
+# Install to $GOPATH/bin or $HOME/go/bin
+cd cmd/templ && go install
+```
+
+----------------------------------------
+
+TITLE: Run Documentation Development Server
+DESCRIPTION: This command starts the development server for the project's documentation site. It's executed from the docs directory and uses npm run start.
+
+SOURCE: https://github.com/a-h/templ/blob/main/README.md#_snippet_15
+
+LANGUAGE: Shell
+CODE:
+```
+npm run start
+```
+
+----------------------------------------
+
+TITLE: Initialize Go Module and Install templ
+DESCRIPTION: Navigates into the newly created project directory, initializes a Go module to manage dependencies, and then fetches the `github.com/a-h/templ` library.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/02-creating-a-simple-templ-component.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+cd hello-world
+go mod init github.com/a-h/templ-examples/hello-world
+go get github.com/a-h/templ
+```
+
+----------------------------------------
+
+TITLE: Pull templ Docker Image
+DESCRIPTION: Pulls the latest 'templ' Docker container image from the GitHub Container Registry, making it available for local use.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_5
+
+LANGUAGE: bash
+CODE:
+```
+docker pull ghcr.io/a-h/templ:latest
+```
+
+----------------------------------------
+
+TITLE: Output of templ component using Go html/template (HTML) - Example 1
+DESCRIPTION: The expected HTML output generated by rendering the `Example` templ component. The content `<div>Hello, World!</div>` is produced by the embedded Go `html/template`.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/15-using-with-go-templates.md#_snippet_2
+
+LANGUAGE: HTML
+CODE:
+```
+<!DOCTYPE html>
+<html>
+	<body>
+		<div>Hello, World!</div>
+	</body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: Integrate templ into Nix Flake Configuration
+DESCRIPTION: Demonstrates how to add 'templ' to your Nix Flake, either for NixOS system-wide installation via an overlay and 'environment.systemPackages', or for use within a flake project's 'packages' or 'devShell'.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/01-installation.md#_snippet_4
+
+LANGUAGE: nix
+CODE:
+```
+{
+  inputs = {
+    ...
+    templ.url = "github:a-h/templ";
+    ...
+  };
+  outputs = inputs@{
+    ...
+  }:
+
+  # For NixOS configuration:
+  {
+    # Add the overlay,
+    nixpkgs.overlays = [
+      inputs.templ.overlays.default
+    ];
+    # and install the package
+    environment.systemPackages = with pkgs; [
+      templ
+    ];
+  };
+
+  # For a flake project:
+  let
+    forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
+      inherit system;
+      pkgs = import nixpkgs { inherit system; };
+    });
+    templ = system: inputs.templ.packages.${system}.templ;
+  in {
+    packages = forAllSystems ({ pkgs, system }: {
+      myNewPackage = pkgs.buildGoModule {
+        ...
+        preBuild = ''
+          ${templ system}/bin/templ generate
+        '';
+      };
+    });
+
+    devShell = forAllSystems ({ pkgs, system }:
+      pkgs.mkShell {
+        buildInputs = with pkgs; [
+          go
+          (templ system)
+        ];
+      };
+  });
+}
+```
+
+----------------------------------------
+
+TITLE: Start local development server
+DESCRIPTION: Initiates a local development server and automatically opens a browser window. Most code changes are reflected live without requiring a server restart.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/README.md#_snippet_1
+
+LANGUAGE: Shell
+CODE:
+```
+$ yarn start
+```
+
+----------------------------------------
+
+TITLE: Run the templ Go web application
+DESCRIPTION: This Bash command compiles and executes all Go source files in the current directory. It starts the `templ` web server, making it accessible on the configured port (3000).
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/03-running-your-first-templ-application.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+go run *.go
+```
+
+----------------------------------------
+
+TITLE: Create a templ HTTP server in Go
+DESCRIPTION: This Go code defines the `main` function to set up an HTTP server. It initializes a `templ` component, registers it as the root handler using `templ.Handler`, and starts listening for incoming requests on port 3000.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/03-running-your-first-templ-application.md#_snippet_0
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/a-h/templ"
+)
+
+func main() {
+	component := hello("John")
+	
+	http.Handle("/", templ.Handler(component))
+
+	fmt.Println("Listening on :3000")
+	http.ListenAndServe(":3000", nil)
+}
+```
+
+----------------------------------------
+
+TITLE: Rendering templ component into Go html/template (Go) - Example 2
+DESCRIPTION: Illustrates rendering a templ component (`greeting`) into a `template.HTML` value using `templ.ToGoHTML`. This `template.HTML` value is then passed to and executed by the standard Go `html/template` (`example`), effectively embedding the templ component's output within the Go template.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/15-using-with-go-templates.md#_snippet_4
+
+LANGUAGE: Go
+CODE:
+```
+func main() {
+	// Create the templ component.
+	templComponent := greeting()
+
+	// Render the templ component to a `template.HTML` value.
+	html, err := templ.ToGoHTML(context.Background(), templComponent)
+	if err != nil {
+		t.Fatalf("failed to convert to html: %v", err)
+	}
+
+	// Use the `template.HTML` value within the text/html template.
+	err = example.Execute(os.Stdout, html)
+	if err != nil {
+		t.Fatalf("failed to execute template: %v", err)
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Example HTML Output from Program
+DESCRIPTION: Displays the actual HTML output generated by running the Go program. This output is the rendered content of the `hello` templ component, demonstrating the final result of the templ rendering process.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/02-creating-a-simple-templ-component.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+<div>Hello, John</div>
+```
+
+----------------------------------------
+
+TITLE: Define a basic Templ component in Go
+DESCRIPTION: This snippet defines a `Hello()` Templ component within the `goof` package. It showcases the `templ` keyword for component definition and includes examples of single-line, multi-line, and block comments in Go. The component simply renders the text 'Hello'.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templatefile_can_start_with_multiple_comments_and_whitespace.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+// Go comment
+
+/* Multiline comment on a single line */
+
+/*
+
+Multi-line comment on multiple lines
+
+*/
+
+package goof
+
+templ Hello() {
+	Hello
+}
+```
+
+----------------------------------------
+
+TITLE: Build templ Components
+DESCRIPTION: Executes the templ code generation command to compile .templ files into Go code, which is required before running the application.
+
+SOURCE: https://github.com/a-h/templ/blob/main/examples/integration-gofiber/README.md#_snippet_0
+
+LANGUAGE: shell
+CODE:
+```
+templ generate
+```
+
+----------------------------------------
+
+TITLE: Rendering a templ Component in Go
+DESCRIPTION: A simple Go main function demonstrating how to render a templ component (the button example) to standard output using context and os.Stdout.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/11-css-style-management.md#_snippet_17
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"context"
+	"os"
+)
+
+func main() {
+	button("Click me", false).Render(context.Background(), os.Stdout)
+}
+```
+
+----------------------------------------
+
+TITLE: Initialize TypeScript Project with npm and Install Dependencies
+DESCRIPTION: This snippet demonstrates how to create a new directory for a TypeScript project, initialize it with `npm`, and install `typescript` and `esbuild` as development dependencies. These tools are essential for writing and bundling TypeScript code.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/12-script-templates.md#_snippet_13
+
+LANGUAGE: bash
+CODE:
+```
+mkdir ts
+cd ts
+npm init
+npm install --save-dev typescript esbuild
+```
+
+----------------------------------------
+
+TITLE: Install React Project Dependencies (npm)
+DESCRIPTION: Installs all necessary Node.js packages and dependencies for the React project. This command fetches modules defined in 'package.json' and places them in 'node_modules'.
+
+SOURCE: https://github.com/a-h/templ/blob/main/benchmarks/react/README.md#_snippet_0
+
+LANGUAGE: sh
+CODE:
+```
+npm i
+```
+
+----------------------------------------
+
+TITLE: Run Go Application
+DESCRIPTION: This task executes the main Go application from the current directory. It's typically used to start the server or main process after compilation, allowing for local development or production deployment.
+
+SOURCE: https://github.com/a-h/templ/blob/main/examples/integration-react/README.md#_snippet_2
+
+LANGUAGE: Shell
+CODE:
+```
+go run .
+```
+
+----------------------------------------
+
+TITLE: Define a Basic Templ Component
+DESCRIPTION: This Go snippet illustrates how to define a simple 'Hello' component using the 'templ' language. It resides within a Go package and demonstrates the minimal structure required for a templ component.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templatefile_can_start_with_comments_and_whitespace.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+// Go comment
+
+package goof
+
+templ Hello() {
+	Hello
+}
+```
+
+----------------------------------------
+
+TITLE: Formatted Go and Templ Code Example
+DESCRIPTION: This snippet shows the same Go program and embedded Templ component after being formatted. It illustrates improved readability, consistent indentation, proper spacing, and adherence to standard Go and Templ style guidelines, making the code cleaner and easier to maintain.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/go_expressions_are_formatted_by_the_go_formatter.txt#_snippet_1
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+type Link struct {
+	Name string
+	Url  string
+}
+
+var a = false
+
+func test() {
+	log.Print("hoi")
+
+	if a {
+		log.Fatal("OH NO !")
+	}
+}
+
+templ x() {
+	<div>Hello World</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Vim-plug Plugin Installation for Templ LSP
+DESCRIPTION: This snippet shows how to install necessary Vim plugins using vim-plug for Templ LSP and autocomplete functionality, specifically vim-lsp, asyncomplete.vim, and asyncomplete-lsp.vim.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/02-ide-support.md#_snippet_16
+
+LANGUAGE: Vimscript
+CODE:
+```
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+```
+
+----------------------------------------
+
+TITLE: Serve a basic static templ component
+DESCRIPTION: Demonstrates how to define a simple `templ` component and serve it as an HTTP handler using `templ.Handler` in a Go application. This setup is suitable for pages without dynamic data.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/05-server-side-rendering/01-creating-an-http-server-with-templ.md#_snippet_0
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+templ hello() {
+	<div>Hello</div>
+}
+```
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"net/http"
+
+	"github.com/a-h/templ"
+)
+
+func main() {
+	http.Handle("/", templ.Handler(hello()))
+
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+----------------------------------------
+
+TITLE: Output of templ component rendered into Go html/template (HTML) - Example 2
+DESCRIPTION: The expected HTML output generated by rendering the `greeting` templ component into a `template.HTML` value and then executing the `example` Go `html/template` with that value. The templ component's output is embedded where `{{ . }}` was in the Go template.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/15-using-with-go-templates.md#_snippet_5
+
+LANGUAGE: HTML
+CODE:
+```
+<!DOCTYPE html>
+<html>
+	<body>
+		<div>Hello, World!</div>
+	</body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: Example HTML Output from Direct Script Call
+DESCRIPTION: Shows the HTML output generated by the templ and Go code for the console log example. It demonstrates how templ compiles the direct script calls (`@printToConsole`) into `<script>` tags containing the generated JavaScript function and subsequent calls with JSON-encoded data.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/12-script-templates.md#_snippet_28
+
+LANGUAGE: HTML
+CODE:
+```
+<html>
+	<body>
+		<script>function __templ_printToConsole_5a85(content){console.log(content)}</script>
+		<script>__templ_printToConsole_5a85("2023-11-11 01:01:40.983381358 +0000 UTC")</script>
+		<script>__templ_printToConsole_5a85("Again: 2023-11-11 01:01:40.983381358 +0000 UTC")</script>
+	</body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: Serve the templ component and client side bundle (main.go)
+DESCRIPTION: To serve the server-side rendered templ template, and the client-side JavaScript bundle created in the previous step, setup a Go web server.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/17-using-react-with-templ.md#_snippet_4
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/a-h/templ"
+)
+
+func main() {
+	mux := http.NewServeMux()
+
+	// Serve the templ page.
+	mux.Handle("/", templ.Handler(page()))
+
+	// Serve static content.
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	// Start the server.
+	fmt.Println("listening on localhost:8080")
+	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
+		log.Printf("error listening: %v", err)
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Templ HTML Structure Formatting Example
+DESCRIPTION: Illustrates the transformation of a `templ` component's HTML structure, showing an 'input' state and its corresponding 'output' after formatting or processing. This example highlights how `templ` handles nested elements and expressions.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templ_expression_elements_are_formatted_the_same_as_other_elements.txt#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ x() {
+	<li>
+		<a href="/">
+	    Home
+	    @hello("home") {
+                data
+                }
+     </a>
+	</li>
+}
+```
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ x() {
+	<li>
+		<a href="/">
+			Home
+			@hello("home") {
+				data
+			}
+		</a>
+	</li>
+}
+```
+
+----------------------------------------
+
+TITLE: Run React Development Server (npm)
+DESCRIPTION: Starts the local development server for the React application, allowing live preview and debugging. This task requires the project to have been built previously to ensure all assets are available.
+
+SOURCE: https://github.com/a-h/templ/blob/main/benchmarks/react/README.md#_snippet_2
+
+LANGUAGE: sh
+CODE:
+```
+npm start
+```
+
+----------------------------------------
+
+TITLE: Define a templ script and template for CSP nonce example
+DESCRIPTION: This templ code defines an onLoad script that triggers an alert and a template that embeds this script. This setup demonstrates how templ renders inline scripts, which can then be secured using CSP nonces.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/10-security/02-content-security-policy.md#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+import "context"
+import "os"
+
+script onLoad() {
+    alert("Hello, world!")
+}
+
+templ template() {
+    @onLoad()
+}
+```
+
+----------------------------------------
+
+TITLE: HTML structure of a generated content page
+DESCRIPTION: This snippet shows an example of a content page, specifically `2023/05/01/may-day/index.html`. It illustrates how markdown content is rendered into HTML within the surrounding template, including paragraphs and unordered lists.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/06-static-rendering/02-blog-example.md#_snippet_6
+
+LANGUAGE: html
+CODE:
+```
+<title>
+ May Day
+</title>
+<h1>
+ May Day
+</h1>
+<div class="content">
+ <p>
+  May Day is an ancient spring festival celebrated on the first of May in the United Kingdom, embracing the arrival of warmer weather and the renewal of life.
+ </p>
+ <p>
+  Top May Day Activities in the UK:
+ </p>
+ <ul>
+  <li>
+   Dancing around the Maypole, a traditional folk activity
+  </li>
+  <li>
+   Attending local village fetes and fairs
+  </li>
+  <li>
+   Watching or participating in Morris dancing performances
+  </li>
+  <li>
+   Enjoying the public holiday known as Early May Bank Holiday
+  </li>
+ </ul>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Install TypeScript project dependencies via npm
+DESCRIPTION: Installs all required Node.js and TypeScript packages for the project. This command must be executed within the 'ts' directory to ensure correct dependency resolution.
+
+SOURCE: https://github.com/a-h/templ/blob/main/examples/typescript/README.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+npm install
+```
+
+----------------------------------------
+
+TITLE: Build Local templ Version
+DESCRIPTION: This sequence of commands first sets the 'templ' version and then navigates into the cmd/templ directory to build a local executable. This is useful for testing changes before a full installation.
+
+SOURCE: https://github.com/a-h/templ/blob/main/README.md#_snippet_1
+
+LANGUAGE: Shell
+CODE:
+```
+version set --template="0.3.%d"
+cd cmd/templ
+go build
+```
+
+----------------------------------------
+
+TITLE: Go and Templ View Model Pattern Example
+DESCRIPTION: This comprehensive example illustrates the "View model" pattern in a Go application using templ. It defines a Handler to process HTTP requests, fetch data, and construct an InviteComponentViewModel. The NewInviteComponentViewModel function populates the view model with display-specific data, including invite count and error messages. Finally, the templ teamInviteComponent demonstrates how this simplified view model is consumed directly by the template for rendering, separating presentation logic from data fetching.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/04-core-concepts/04-view-models.md#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+package invitesget
+
+type Handler struct {
+  Invites *InviteService
+}
+
+func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+  invites, err := h.Invites.Get(getUserIDFromContext(r.Context()))
+  if err != nil {
+     //TODO: Log error server side.
+  }
+  m := NewInviteComponentViewModel(invites, err)
+  teamInviteComponent(m).Render(r.Context(), w)
+}
+
+func NewInviteComponentViewModel(invites []models.Invite, err error) (m InviteComponentViewModel) {
+  m.InviteCount = len(invites)
+  if err != nil {
+    m.ErrorMessage = "Failed to load invites, please try again"
+  }
+  return m
+}
+
+
+type InviteComponentViewModel struct {
+  InviteCount int
+  ErrorMessage string
+}
+
+templ teamInviteComponent(model InviteComponentViewModel) {
+	if model.InviteCount > 0 {
+		<div>You have { fmt.Sprintf("%d", model.InviteCount) } pending invites</div>
+	}
+        if model.ErrorMessage != "" {
+		<div class="error">{ model.ErrorMessage }</div>
+        }
+}
+```
+
+----------------------------------------
+
+TITLE: Conventional Commit Message Example
+DESCRIPTION: An example of a commit message adhering to the Conventional Commits specification. This 'feat' type commit introduces support for Go comments in templates and references a specific issue number.
+
+SOURCE: https://github.com/a-h/templ/blob/main/CONTRIBUTING.md#_snippet_5
+
+LANGUAGE: text
+CODE:
+```
+feat: support Go comments in templates, fixes #234"
+```
+
+----------------------------------------
+
+TITLE: Vim-plug Installation for Templ Indentation
+DESCRIPTION: This optional plugin installation improves indentation for `templ` files in Vim, making it more consistent with Go code outside of `templ` blocks. It also adds `tcomment_vim` support.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/02-ide-support.md#_snippet_20
+
+LANGUAGE: Vimscript
+CODE:
+```
+Plug 'iefserge/templ.vim'
+```
+
+----------------------------------------
+
+TITLE: Unformatted Go and Templ Code Example
+DESCRIPTION: This snippet presents a Go program with an embedded Templ component before any formatting is applied. It demonstrates inconsistent indentation, varied spacing, and non-standard semicolon usage, reflecting a typical 'raw' code state.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/go_expressions_are_formatted_by_the_go_formatter.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+      type Link struct {
+Name string
+	        Url  string
+}
+
+var a = false;
+
+func test() {
+	      log.Print("hoi")
+
+	      if (a) {
+      log.Fatal("OH NO !")
+	}
+}
+
+templ x() {
+	<div>Hello World</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Templ: Error - Text Misinterpreted as Control Flow
+DESCRIPTION: This example shows a templ parsing error that occurs when a text block starts with "if", "switch", or "for" but is not followed by an opening brace '{'. The parser incorrectly assumes a control flow statement, leading to an error because the expected syntax is not met.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/05-statements.md#_snippet_3
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ text(b bool) {
+	<p>if a tree fell in the woods</p>
+}
+```
+
+----------------------------------------
+
+TITLE: Check Go, Gopls, and Templ Binary Paths
+DESCRIPTION: This command checks if the `go`, `gopls`, and `templ` binaries are installed and accessible in the system's PATH. It should return the full path for each binary if found.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/02-ide-support.md#_snippet_21
+
+LANGUAGE: Bash
+CODE:
+```
+which go gopls templ
+```
+
+----------------------------------------
+
+TITLE: Verify templ server output with curl
+DESCRIPTION: This Bash command uses `curl` to send an HTTP GET request to the running `templ` web server at `localhost:3000`. It retrieves and displays the HTML content served by the application, confirming its functionality.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/03-running-your-first-templ-application.md#_snippet_2
+
+LANGUAGE: bash
+CODE:
+```
+curl localhost:3000
+```
+
+----------------------------------------
+
+TITLE: Using templ component in Go html/template (templ)
+DESCRIPTION: Defines a simple templ component `greeting` and a Go `html/template` named `example` that serves as a container expecting HTML content via `{{ . }}`. This sets up the components for embedding the templ output into the Go template.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/15-using-with-go-templates.md#_snippet_3
+
+LANGUAGE: templ
+CODE:
+```
+package testgotemplates
+
+import "html/template"
+
+var example = template.Must(template.New("example").Parse(`<!DOCTYPE html>
+<html>
+	<body>
+		{{ . }}
+	</body>
+</html>
+`))
+
+templ greeting() {
+	<div>Hello, World!</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Create Project Directory
+DESCRIPTION: Creates a new directory named `hello-world` to serve as the root for the Go project.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/02-creating-a-simple-templ-component.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+mkdir hello-world
+```
+
+----------------------------------------
+
+TITLE: Original Templ Component Code
+DESCRIPTION: The initial Templ component definition, demonstrating the original spacing around interpolated variables before automatic formatting.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/spacing_between_string_spreads_attributes_is_kept.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+templ x() {
+    <div>{firstName...} {lastName...}</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Define a Basic Templ Component
+DESCRIPTION: This snippet defines a simple `templ` component named `Hello`. `templ` is a Go-based language for writing HTML templates. The component, when rendered, will output the text 'Hello'. This illustrates the fundamental structure of a `templ` file.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templatefile_can_be_round_tripped.txt#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package goof
+
+templ Hello() {
+	Hello
+}
+```
+
+----------------------------------------
+
+TITLE: Templ Code Input Format Example
+DESCRIPTION: Illustrates a templ code snippet as it might appear before being processed by a formatter, highlighting the initial indentation and argument placement within a block.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templelement_multiline_block_indentation.txt#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package p
+
+templ f() {
+	@Other(
+			p.Test,
+"s",
+){
+	<p>hello</p>
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Templ Code Formatted Output Example
+DESCRIPTION: Shows the same templ code snippet after being automatically formatted, demonstrating improved readability through consistent indentation and argument alignment.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templelement_multiline_block_indentation.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package p
+
+templ f() {
+	@Other(
+		p.Test,
+		"s",
+	) {
+		<p>hello</p>
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Start templ Proxy Server in Watch Mode
+DESCRIPTION: This command starts the templ proxy server in watch mode, listening for file changes and automatically refreshing the browser. It assumes the HTTP server is running on http://localhost:8080 and prevents automatic browser opening.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/04-live-reload-with-other-tools.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+templ generate --watch --proxy="http://localhost:8080" --open-browser=false
+```
+
+----------------------------------------
+
+TITLE: Creating a Basic templ Component
+DESCRIPTION: templ files can define reusable components, which are compiled into Go functions returning a `templ.Component` interface. This example shows a simple `headerTemplate` component that accepts a string parameter and renders HTML with an `h1` tag.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/01-basic-syntax.md#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ headerTemplate(name string) {
+  <header data-testid="headerTemplate">
+    <h1>{ name }</h1>
+  </header>
+}
+```
+
+----------------------------------------
+
+TITLE: Defining a Basic Templ Component in Go
+DESCRIPTION: This snippet illustrates the basic structure of a 'templ' component in Go. It defines a component named 'Hello' which simply outputs the text 'Hello'. 'templ' components are used to generate HTML content within Go applications.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templatefile_can_start_with_comments.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+// Go comment
+package goof
+
+templ Hello() {
+	Hello
+}
+```
+
+----------------------------------------
+
+TITLE: Run Go web server application
+DESCRIPTION: Compiles and runs the main Go application. This command starts the web server, making the templ project accessible, and serves the bundled TypeScript assets.
+
+SOURCE: https://github.com/a-h/templ/blob/main/examples/typescript/README.md#_snippet_4
+
+LANGUAGE: bash
+CODE:
+```
+go run .
+```
+
+----------------------------------------
+
+TITLE: Go Lambda Entrypoint for templ Applications
+DESCRIPTION: This Go code snippet demonstrates the `main` function for an AWS Lambda application. It utilizes the `algnhsa` package to adapt the standard Go HTTP interface for Lambda requests and responses, setting up handlers for counter services and session management before starting the Lambda listener.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/08-hosting-and-deployment/01-hosting-on-aws-lambda.md#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+import (
+	"os"
+
+	"github.com/a-h/templ/examples/counter/db"
+	"github.com/a-h/templ/examples/counter/handlers"
+	"github.com/a-h/templ/examples/counter/services"
+	"github.com/a-h/templ/examples/counter/session"
+	"github.com/akrylysov/algnhsa"
+	"golang.org/x/exp/slog"
+)
+
+func main() {
+	// Create handlers.
+	log := slog.New(slog.NewJSONHandler(os.Stderr))
+	s, err := db.NewCountStore(os.Getenv("TABLE_NAME"), os.Getenv("AWS_REGION"))
+	if err != nil {
+		log.Error("failed to create store", slog.Any("error", err))
+		os.Exit(1)
+	}
+	cs := services.NewCount(log, s)
+	h := handlers.New(log, cs)
+
+	// Add session middleware.
+	sh := session.NewMiddleware(h)
+
+	// Start Lambda.
+	algnhsa.ListenAndServe(sh, nil)
+}
+```
+
+----------------------------------------
+
+TITLE: Templ Component Prop Drilling Example
+DESCRIPTION: Illustrates the 'prop drilling' problem where data is passed through intermediate components that don't directly use it, leading to verbose parameter lists and unnecessary dependencies.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/14-context.md#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ top(name string) {
+	<div>
+		@middle(name)
+	</div>
+}
+
+templ middle(name string) {
+	<ul>
+		@bottom(name)
+	</ul>
+}
+
+templ bottom(name string) {
+  <li>{ name }</li>
+}
+```
+
+----------------------------------------
+
+TITLE: Templ Component with Switch (Formatted Output)
+DESCRIPTION: Shows the same 'input' templ component after being processed or formatted. It demonstrates the standard indentation and structure applied to the templ code, making it more readable while retaining the same functionality.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/switch_statements_are_placed_on_a_new_line.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package test
+
+templ input(items []string) {
+	<div>
+		{ "the" }
+		<div>{ "other" }</div>
+		switch items[0] {
+			case "a":
+				<div>{ items[0] }</div>
+			case "b":
+				<div>{ items[1] }</div>
+		}
+	</div>
+}
+```
+
+----------------------------------------
+
+TITLE: HTML Output for templ URL Sanitization Example
+DESCRIPTION: This HTML snippet represents the expected output generated by the templ compiler for the URL sanitization example. It illustrates how `templ.URL` transforms a JavaScript URL into a safe `about:invalid` link, while `templ.SafeURL` preserves the original URL.
+
+SOURCE: https://github.com/a-h/templ/blob/main/CONTRIBUTING.md#_snippet_4
+
+LANGUAGE: html
+CODE:
+```
+<a href="javascript:alert(&#39;unaffected&#39;);">Ignored</a>
+<a href="about:invalid#TemplFailedSanitizationURL">Sanitized</a>
+<a href="javascript:alert(&#39;should not be sanitized&#39;)">Unsanitized</a>
+```
+
+----------------------------------------
+
+TITLE: Initialize Sample Blog Post Data in Go
+DESCRIPTION: This Go code initializes a slice of `Post` structs with sample blog post data. Each entry includes a date, title, and multi-line content, simulating typical blog post entries for demonstration purposes.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/06-static-rendering/02-blog-example.md#_snippet_2
+
+LANGUAGE: go
+CODE:
+```
+posts := []Post{
+	{
+		Date:  time.Date(2023, time.January, 1, 0, 0, 0, 0, time.UTC),
+		Title: "Happy New Year!",
+		Content: `New Year is a widely celebrated occasion in the United Kingdom, marking the end of one year and the beginning of another.
+
+Top New Year Activities in the UK include:
+
+* Attending a Hogmanay celebration in Scotland
+* Taking part in a local First-Foot tradition in Scotland and Northern England
+* Setting personal resolutions and goals for the upcoming year
+* Going for a New Year's Day walk to enjoy the fresh start
+* Visiting a local pub for a celebratory toast and some cheer
+`,
+	},
+	{
+		Date:  time.Date(2023, time.May, 1, 0, 0, 0, 0, time.UTC),
+		Title: "May Day",
+		Content: `May Day is an ancient spring festival celebrated on the first of May in the United Kingdom, embracing the arrival of warmer weather and the renewal of life.
+
+Top May Day Activities in the UK:
+
+* Dancing around the Maypole, a traditional folk activity
+* Attending local village fetes and fairs
+* Watching or participating in Morris dancing performances
+* Enjoying the public holiday known as Early May Bank Holiday
+`,
+	},
+}
+```
+
+----------------------------------------
+
+TITLE: Templ Counter Example: Frontend Components with Datastar
+DESCRIPTION: This `templ` code defines the frontend HTML components for a Datastar counter example. It includes buttons to increment global and user-specific counters, and display elements that reactively update based on Datastar signals. The `data-on-click` and `data-text` attributes demonstrate how Datastar actions and signal binding are used to manage UI updates and send requests to the server.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/05-server-side-rendering/04-datastar.md#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package site
+
+import datastar "github.com/starfederation/datastar/sdk/go"
+
+type TemplCounterSignals struct {
+	Global uint32 `json:"global"`
+	User   uint32 `json:"user"`
+}
+
+templ templCounterExampleButtons() {
+	<div>
+		<button
+			data-on-click="@post('/examples/templ_counter/increment/global')" 
+		>
+			Increment Global
+		</button>
+		<button
+			data-on-click={ datastar.PostSSE('/examples/templ_counter/increment/user') }
+			<!-- Alternative: Using Datastar SDK sugar--> 
+		>
+			Increment User
+		</button>
+	</div>
+}
+
+templ templCounterExampleCounts() {
+	<div>
+		<div>
+			<div>Global</div>
+			<div data-text="$global"></div>
+		</div>
+		<div>
+			<div>User</div>
+			<div data-text="$user"></div>
+		</div>
+	</div>
+}
+
+templ templCounterExampleInitialContents(signals TemplCounterSignals) {
+	<div
+		id="container"
+		data-signals={ templ.JSONString(signals) }
+	>
+		@templCounterExampleButtons()
+		@templCounterExampleCounts()
+	</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Output Templ Component Formatting
+DESCRIPTION: This snippet shows the templ component code after formatting or processing. It demonstrates the standard indentation and layout applied to the component definition and its contents.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templelement_multiline_in_div.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package p
+
+templ f() {
+	<div>
+		@Other(
+			p.Test,
+			"s",
+		)
+	</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Formatted Templ component output (Input)
+DESCRIPTION: Shows the formatted version of the `input` templ component code. This typically results from running a templ formatter tool, improving readability through consistent indentation.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/for_loops_are_placed_on_a_new_line.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package test
+
+templ input(items []string) {
+	<div>
+		{ "the" }
+		<div>{ "other" }</div>
+		for _, item := range items {
+			<div>{ item }</div>
+		}
+	</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Output Templ Code Example
+DESCRIPTION: This snippet shows the formatted templ code after processing by the templ tool, demonstrating its standard output style.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/all_children_indented__with_nested_indentation__when_close_tag_is_on_new_line.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package test
+
+templ input(value, validation string) {
+	<div>
+		<p>
+			{ "the" }
+			<a href="http://example.com">
+				{ "data" }
+			</a>
+		</p>
+	</div>
+}
+```
+
+----------------------------------------
+
+TITLE: CSS Components with Arguments
+DESCRIPTION: Demonstrates how CSS components can accept arguments, leading to different generated styles. These examples show a 'loading' component at 50% and 100% width, respectively.
+
+SOURCE: https://github.com/a-h/templ/blob/main/generator/test-css-usage/expected.html#_snippet_3
+
+LANGUAGE: CSS
+CODE:
+```
+.loading_a3cc3f08{width:50%;}
+```
+
+LANGUAGE: CSS
+CODE:
+```
+.loading_9ccc4ca9{width:100%;}
+```
+
+----------------------------------------
+
+TITLE: Nesting Templ Components (Output)
+DESCRIPTION: This snippet shows the formatted version of the nested `templ` components, demonstrating standard indentation and structure after processing. It uses the same components and parameters as the input.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/templelement_multiline_block_containing_multiline_block.txt#_snippet_1
+
+LANGUAGE: templ
+CODE:
+```
+package p
+
+templ f() {
+	@Other(
+		p.Test,
+		"s"
+	) {
+		@another.Component(
+			p.Test,
+			3,
+			"s"
+		) {
+			<p>hello</p>
+		}
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: JavaScript Alert Box with Quoted String
+DESCRIPTION: This snippet demonstrates how to display a simple alert box in a web browser using JavaScript. The example specifically shows a string literal that contains double quotes, correctly enclosed within single quotes, which is a common scenario in string manipulation.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/scriptparsertestdata/singlequote.txt#_snippet_0
+
+LANGUAGE: JavaScript
+CODE:
+```
+window.alert('This is "quoted"');
+```
+
+----------------------------------------
+
+TITLE: Run Go Program to Render HTML
+DESCRIPTION: Executes the Go program from the current directory. This command compiles and runs the `main.go` file, which in turn renders the `hello` templ component's HTML to the console.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/02-creating-a-simple-templ-component.md#_snippet_6
+
+LANGUAGE: bash
+CODE:
+```
+go run .
+```
+
+----------------------------------------
+
+TITLE: Example Output of templ List Component
+DESCRIPTION: Shows the expected HTML output generated by the `nameList` templ component when provided with a list of items, demonstrating the result of the `for` loop iteration rendering list items.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/08-loops.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<ul>
+  <li>A</li>
+  <li>B</li>
+  <li>C</li>
+</ul>
+```
+
+----------------------------------------
+
+TITLE: Render templ Component to Stdout in Go
+DESCRIPTION: Creates a `main.go` file that serves as the entry point for the application. It initializes the `hello` templ component with a specific name and then renders its HTML output directly to standard output (`os.Stdout`), demonstrating how to integrate and display templ components within a Go program.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/02-quick-start/02-creating-a-simple-templ-component.md#_snippet_5
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"context"
+	os"
+)
+
+func main() {
+	component := hello("John")
+	component.Render(context.Background(), os.Stdout)
+}
+```
+
+----------------------------------------
+
+TITLE: Go HTTP Handlers and Server for Counter Application
+DESCRIPTION: Implements the Go backend server logic, including HTTP handlers for GET and POST requests. The `postHandler` updates a global counter based on form submission, and the `getHandler` renders the templ page. The global state is stored in RAM and is not persistent.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/05-server-side-rendering/02-example-counter-application.md#_snippet_2
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+type GlobalState struct {
+	Count int
+}
+
+var global GlobalState
+
+func getHandler(w http.ResponseWriter, r *http.Request) {
+	component := page(global.Count, 0)
+	component.Render(r.Context(), w)
+}
+
+func postHandler(w http.ResponseWriter, r *http.Request) {
+	// Update state.
+	r.ParseForm()
+
+	// Check to see if the global button was pressed.
+	if r.Form.Has("global") {
+		global.Count++
+	}
+	//TODO: Update session.
+
+	// Display the form.
+	getHandler(w, r)
+}
+
+func main() {
+	// Handle POST and GET requests.
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			postHandler(w, r);
+			return
+		}
+		getHandler(w, r)
+	})
+
+	// Start the server.
+	fmt.Println("listening on http://localhost:8000")
+	if err := http.ListenAndServe("localhost:8000", nil); err != nil {
+		log.Printf("error listening: %v", err)
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: JavaScript function displaying an alert
+DESCRIPTION: Defines a simple JavaScript function that executes an 'alert' command, displaying a pop-up message 'hello' to the user. This is a basic example of user interaction.
+
+SOURCE: https://github.com/a-h/templ/blob/main/generator/test-script-usage/expected.html#_snippet_1
+
+LANGUAGE: JavaScript
+CODE:
+```
+function __templ_withoutParameters_6bbf(){alert("hello"); }
+```
+
+----------------------------------------
+
+TITLE: Templ Component Definition (Input)
+DESCRIPTION: Defines a basic `templ` component `x` with unformatted placeholders `pt1` and `pt2` within a div. This represents the initial state before applying a code formatter.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/spacing_between_string_expressions_is_not_magically_added.txt#_snippet_0
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+templ x() {
+    <div>{pt1}{pt2}</div>
+}
+```
+
+----------------------------------------
+
+TITLE: HTML structure of the main index page
+DESCRIPTION: This snippet displays the `index.html` file, which serves as the main entry point for the generated website. It includes the page title and links to other content pages, demonstrating how `templ` organizes navigation.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/06-static-rendering/02-blog-example.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<title>
+ My Website
+</title>
+<h1>
+ My Website
+</h1>
+<div>
+ <a href="2023/01/01/happy-new-year/">
+  Happy New Year!
+ </a>
+</div>
+<div>
+ <a href="2023/05/01/may-day/">
+  May Day
+ </a>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Configure templ Language Server in Neovim
+DESCRIPTION: This Lua snippet demonstrates how to set up the `templ` Language Server in Neovim using `lspconfig`. It iterates through a list of servers, including `templ`, and applies a common `on_attach` and `capabilities` configuration. Ensure the `templ` command is in your system path for the LSP to start.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/02-ide-support.md#_snippet_3
+
+LANGUAGE: lua
+CODE:
+```
+local lspconfig = require("lspconfig")
+
+-- Use a loop to conveniently call 'setup' on multiple servers and
+-- map buffer local keybindings when the language server attaches
+
+local servers = { 'gopls', 'ccls', 'cmake', 'tsserver', 'templ' }
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+  })
+end
+```
+
+----------------------------------------
+
+TITLE: Generate Static HTML Files for Blog Posts in Go
+DESCRIPTION: This `main` function in Go orchestrates the static site generation process. It creates an output directory, renders the `indexPage` for the blog's homepage, and then iterates through each `Post` to generate individual blog post pages. It uses `goldmark` to convert markdown content to HTML and the `Unsafe` component to embed this raw HTML into the templ output.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/06-static-rendering/02-blog-example.md#_snippet_4
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"bytes"
+	"context"
+	"io"
+	"log"
+	"os"
+	"path"
+	"time"
+
+	"github.com/a-h/templ"
+	"github.com/gosimple/slug"
+	"github.com/yuin/goldmark"
+)
+
+func main() {
+	// Output path.
+	rootPath := "public"
+	if err := os.Mkdir(rootPath, 0755); err != nil {
+		log.Fatalf("failed to create output directory: %v", err)
+	}
+
+	// Create an index page.
+	name := path.Join(rootPath, "index.html")
+	f, err := os.Create(name)
+	if err != nil {
+		log.Fatalf("failed to create output file: %v", err)
+	}
+	// Write it out.
+	err = indexPage(posts).Render(context.Background(), f)
+	if err != nil {
+		log.Fatalf("failed to write index page: %v", err)
+	}
+
+	// Create a page for each post.
+	for _, post := range posts {
+		// Create the output directory.
+		dir := path.Join(rootPath, post.Date.Format("2006/01/02"), slug.Make(post.Title))
+		if err := os.MkdirAll(dir, 0755); err != nil && err != os.ErrExist {
+			log.Fatalf("failed to create dir %q: %v", dir, err)
+		}
+
+		// Create the output file.
+		name := path.Join(dir, "index.html")
+		f, err := os.Create(name)
+		if err != nil {
+			log.Fatalf("failed to create output file: %v", err)
+		}
+
+		// Convert the markdown to HTML, and pass it to the template.
+		var buf bytes.Buffer
+		if err := goldmark.Convert([]byte(post.Content), &buf); err != nil {
+			log.Fatalf("failed to convert markdown to HTML: %v", err)
+		}
+
+		// Create an unsafe component containing raw HTML.
+		content := Unsafe(buf.String())
+
+		// Use templ to render the template containing the raw HTML.
+		err = contentPage(post.Title, content).Render(context.Background(), f)
+		if err != nil {
+			log.Fatalf("failed to write output file: %v", err)
+		}
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Templ: Applying Conditional Attributes to HTML Elements
+DESCRIPTION: This snippet illustrates how to conditionally add an HTML attribute (e.g., 'class') to an element in templ. The 'if' block is placed directly within the tag's attributes, and if the condition is true, the attribute is rendered. The 'in' example shows the compact syntax, and the 'out' example shows the formatted output.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/conditional_expressions_result_in_all_attrs_indented__2.txt#_snippet_0
+
+LANGUAGE: templ
+CODE:
+```
+package test
+
+templ conditionalAttributes(addClass bool) {
+	<div id="conditional"
+if addClass {
+class="itWasTrue"
+}
+width="300">Content</div>
+}
+```
+
+LANGUAGE: templ
+CODE:
+```
+package test
+
+templ conditionalAttributes(addClass bool) {
+	<div
+		id="conditional"
+		if addClass {
+			class="itWasTrue"
+		}
+		width="300"
+	>Content</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Formatted Templ Component Code
+DESCRIPTION: The automatically reformatted Templ component definition, showing consistent spacing around interpolated variables after processing by a code formatter.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/spacing_between_string_spreads_attributes_is_kept.txt#_snippet_1
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+templ x() {
+	<div>{ firstName... } { lastName... }</div>
+}
+```
+
+----------------------------------------
+
+TITLE: templ generate: Generate Single File
+DESCRIPTION: This example demonstrates how to use the `templ generate` command to generate Go code for a specific `.templ` file, in this case, `header.templ`, using the `-f` flag.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/01-cli.md#_snippet_2
+
+LANGUAGE: Shell
+CODE:
+```
+templ generate -f header.templ
+```
+
+----------------------------------------
+
+TITLE: Templ Component Definition (Formatted Output)
+DESCRIPTION: Shows the formatted version of the `templ` component `x`, where placeholders `pt1` and `pt2` are now surrounded by spaces for improved readability. This is the result after applying a code formatter.
+
+SOURCE: https://github.com/a-h/templ/blob/main/parser/v2/formattestdata/spacing_between_string_expressions_is_not_magically_added.txt#_snippet_1
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+templ x() {
+	<div>{ pt1 }{ pt2 }</div>
+}
+```
+
+----------------------------------------
+
+TITLE: Go main.go for templ application
+DESCRIPTION: A minimal Go program demonstrating how to serve a `templ` component using the standard `net/http` package. It initializes a `templ` component and listens for HTTP requests on port 8080.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/03-live-reload.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/a-h/templ"
+)
+
+func main() {
+	component := hello("World")
+
+	http.Handle("/", templ.Handler(component))
+
+	fmt.Println("Listening on :8080")
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+----------------------------------------
+
+TITLE: Storing translations in YAML files
+DESCRIPTION: Translations are stored in YAML files, organized by language. This example shows a basic English translation file with 'hello' and 'select_language' keys.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/12-integrations/02-internationalization.md#_snippet_0
+
+LANGUAGE: YAML
+CODE:
+```
+en:
+  hello: "Hello"
+  select_language: "Select Language"
+```
+
+----------------------------------------
+
+TITLE: Vim Autocomplete Key Mappings for asyncomplete.vim
+DESCRIPTION: This snippet provides example key mappings for `asyncomplete.vim` to improve the autocomplete experience in Vim. It configures Tab, Shift-Tab, and Enter keys to interact with the completion popup.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/09-developer-tools/02-ide-support.md#_snippet_18
+
+LANGUAGE: Vimscript
+CODE:
+```
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+```
+
+----------------------------------------
+
+TITLE: JavaScript Function to Display Greeting Alert
+DESCRIPTION: This JavaScript function, `hello`, takes a `name` as input and displays a personalized greeting message using an `alert` box. It's a basic example of client-side interaction.
+
+SOURCE: https://github.com/a-h/templ/blob/main/generator/test-once/expected.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+function hello(name) { alert('Hello, ' + name + '!'); }
+```
+
+----------------------------------------
+
+TITLE: Pass Templ Components as Parameters for Dynamic Layouts (Go)
+DESCRIPTION: Shows how to pass a `templ.Component` as a parameter to another Templ component, enabling dynamic content injection into layouts. The example demonstrates rendering the layout from a Go `main` function.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/10-template-composition.md#_snippet_4
+
+LANGUAGE: templ
+CODE:
+```
+package main
+
+templ heading() {
+    <h1>Heading</h1>
+}
+
+templ layout(contents templ.Component) {
+	<div id="heading">
+		@heading()
+	</div>
+	<div id="contents">
+		@contents
+	</div>
+}
+
+templ paragraph(contents string) {
+	<p>{ contents }</p>
+}
+```
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"context"
+	"os"
+)
+
+func main() {
+	c := paragraph("Dynamic contents")
+	layout(c).Render(context.Background(), os.Stdout)
+}
+```
+
+LANGUAGE: html
+CODE:
+```
+<div id="heading">
+	<h1>Heading</h1>
+</div>
+<div id="contents">
+	<p>Dynamic contents</p>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Example Rendered HTML Output with React Placeholders
+DESCRIPTION: This HTML snippet shows the final structure generated by the `templ` application. It includes the main React bundle script and multiple `div` elements, each with a `data-name` attribute and an inline script that calls `bundle.renderHello`. This demonstrates how `templ` prepares the DOM for client-side React hydration.
+
+SOURCE: https://github.com/a-h/templ/blob/main/docs/docs/03-syntax-and-usage/17-using-react-with-templ.md#_snippet_10
+
+LANGUAGE: html
+CODE:
+```
+<html>
+  <head>
+    <title>React integration</title>
+  </head>
+  <body>
+    <div id="react-header"></div>
+    <div id="react-content"></div>
+    <div>This is server-side content from templ.</div>
+
+    <script src="static/index.js"></script>
+
+    <div data-name="Alice">
+      <script>
+        // Place the React component into the parent div.
+        bundle.renderHello(document.currentScript.closest('div'));
+      </script>
+    </div>
+    <div data-name="Bob">
+      <script>
+        // Place the React component into the parent div.
+	bundle.renderHello(document.currentScript.closest('div'));
+      </script>
+    </div>
+    <div data-name="Charlie">
+      <script>
+        // Place the React component into the parent div.
+	bundle.renderHello(document.currentScript.closest('div'));
+      </script>
+    </div>
+  </body>
+</html>
+```

@@ -1,0 +1,1484 @@
+========================
+CODE SNIPPETS
+========================
+TITLE: Installing Go Chi Router via go get
+DESCRIPTION: This command installs the chi router library for Go, making it available for use in your project. The `-u` flag ensures that the package is updated to the latest version.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_0
+
+LANGUAGE: sh
+CODE:
+```
+go get -u github.com/go-chi/chi/v5
+```
+
+----------------------------------------
+
+TITLE: Creating Simple Hello World Server - Go
+DESCRIPTION: Defines a basic Go HTTP server program using the Chi router. It initializes a router, adds the logger middleware, sets up a GET route for the root path ("/") that writes "Hello World!" to the response, and starts the server listening on port 3000. Requires the `go-chi/chi` package.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/getting_started.md#_snippet_1
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+func main() {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello World!"))
+	})
+	http.ListenAndServe(":3000", r)
+}
+```
+
+----------------------------------------
+
+TITLE: Running a Simple Go Chi Server
+DESCRIPTION: This Go code sets up a basic web server using the chi router. It initializes a new router, adds the logger middleware, defines a GET route for the root path ('/'), and starts the server listening on port 3000. It serves a simple 'Hello World!' response.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+func main() {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello World!"))
+	})
+	http.ListenAndServe(":3000", r)
+}
+```
+
+----------------------------------------
+
+TITLE: Installing Go-Chi Router - Shell
+DESCRIPTION: Installs the latest version of the Go Chi HTTP router library using the Go module system's `go get` command. This command fetches the package source code and makes it available for use in Go projects. Requires a Go environment with module support.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/getting_started.md#_snippet_0
+
+LANGUAGE: Shell
+CODE:
+```
+go get -u github.com/go-chi/chi/v5
+```
+
+----------------------------------------
+
+TITLE: Main Application Setup with chi Router, Middleware, and Sub-Routers in Go
+DESCRIPTION: The main function initializes a chi router, applies several standard middleware (RequestID, RealIP, Logger, Recoverer, CleanPath, Timeout) and custom middleware (SetContentTypeMiddleware, AuthMiddleware), sets up a simple root route, creates and configures sub-routers for "/todo" and "/auth", mounts these sub-routers, and starts an HTTP server listening on "localhost:5000". It demonstrates organizing routes and applying middleware conditionally via sub-routers. Dependencies include the net/http, time, and github.com/go-chi/chi/v5, github.com/go-chi/chi/v5/middleware packages.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_10
+
+LANGUAGE: Go
+CODE:
+```
+func main() {
+	r := chi.NewRouter()
+
+	r.Use(middleware.RequestID)
+
+	// RealIP is a middleware that sets a http.Request's RemoteAddr to the results
+	// of parsing either the X-Real-IP header or the X-Forwarded-For header (in that
+	// order).
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+
+	// Recoverer is a middleware that recovers from panics, logs the panic (and a
+	// backtrace), and returns a HTTP 500 (Internal Server Error) status if
+	// possible. Recoverer prints a request ID if one is provided.
+	r.Use(middleware.Recoverer)
+
+	// CleanPath middleware will clean out double slash mistakes from a user's request path.
+	// For example, if a user requests /users//1 or //users////1 will both be treated as: /users/1
+	r.Use(middleware.CleanPath)
+
+	// Set a timeout value on the request context (ctx), that will signal
+	// through ctx.Done() that the request has timed out and further
+	// processing should be stopped.
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	// Initializing our db store
+	store := Store{
+		Users: map[string]User{},
+		TODOs: map[int32]Todo{},
+	}
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello World!"))
+	})
+
+	// Creating a New Router for todo handlers
+	todoRouter := chi.NewRouter()
+
+	// Use Content-Type Middleware
+	todoRouter.Use(SetContentTypeMiddleware)
+
+	// Use Auth Middleware since these are protected Routes
+	todoRouter.Use(AuthMiddleware(&store))
+	todoRouter.Get("/all", GetAllToDoHandler(&store))
+	todoRouter.Post("/create", CreateToDoHandler(&store))
+	todoRouter.Put("/modify", ModifyToDoHandler(&store))
+	todoRouter.Delete("/delete/{id}", DeleteToDoHandler(&store))
+
+	// Creating New Router for User Authentication
+	userAuthRouter := chi.NewRouter()
+	userAuthRouter.Use(SetContentTypeMiddleware)
+	userAuthRouter.Post("/signup", SignUpHandler(&store))
+
+	// Mounting Both Sub Routers to a path in the main router
+	r.Mount("/todo", todoRouter)
+	r.Mount("/auth", userAuthRouter)
+
+	// Starting the Server
+	http.ListenAndServe("localhost:5000", r)
+}
+```
+
+----------------------------------------
+
+TITLE: Adding Useful Chi Middlewares
+DESCRIPTION: This Go code extends the basic server setup by adding several standard chi middlewares to the router. These include `RequestID`, `RealIP`, `Logger`, `Recoverer`, `CleanPath`, and `Timeout`, providing request tracing, IP handling, logging, panic recovery, path cleaning, and request timeouts.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_3
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	//...
+	"net/http"
+	"time"
+
+	"context"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+
+func main(){
+	r := chi.NewRouter()
+	
+
+	r.Use(middleware.RequestID)
+	
+	// RealIP is a middleware that sets a http.Request's RemoteAddr to the results
+	// of parsing either the X-Real-IP header or the X-Forwarded-For header (in that
+	// order).
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+
+	// Recoverer is a middleware that recovers from panics, logs the panic (and a
+	// backtrace), and returns a HTTP 500 (Internal Server Error) status if
+	// possible. Recoverer prints a request ID if one is provided.
+	r.Use(middleware.Recoverer)
+
+	// CleanPath middleware will clean out double slash mistakes from a user's request path.
+	// For example, if a user requests /users//1 or //users////1 will both be treated as: /users/1
+	r.Use(middleware.CleanPath)
+
+	// Set a timeout value on the request context (ctx), that will signal
+	// through ctx.Done() that the request has timed out and further
+	// processing should be stopped.
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello World!"))
+	})
+
+}
+```
+
+----------------------------------------
+
+TITLE: Running Go Server Application - Shell
+DESCRIPTION: Executes the Go source file named `main.go` using the `go run` command. This command compiles and runs the specified file as an executable program, typically used here to start the HTTP server defined within the file. Requires the Go source file to exist.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/getting_started.md#_snippet_2
+
+LANGUAGE: Shell
+CODE:
+```
+go run main.go
+```
+
+----------------------------------------
+
+TITLE: Executing the Simple Go Server
+DESCRIPTION: This shell command compiles and runs the Go program containing the simple chi server. It assumes the Go code is saved in a file named `main.go`.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_2
+
+LANGUAGE: sh
+CODE:
+```
+go run main.go
+```
+
+----------------------------------------
+
+TITLE: Implementing OAuth2 Resource Server with Go-chi (Go)
+DESCRIPTION: This Go code provides a complete example of an OAuth2 resource server using the go-chi router. It demonstrates setting up standard middleware (Logger, Recoverer, CORS) and specifically integrating the `oauth.Authorize` middleware to protect routes, routing requests to example handlers like `GetCustomers` and `GetOrders`. Requires chi, chi/middleware, chi/cors, and go-chi/oauth dependencies.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_15
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+
+	"github.com/go-chi/oauth"
+)
+
+func main() {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "PUT", "POST", "DELETE", "HEAD", "OPTION"},
+		AllowedHeaders:   []string{"User-Agent", "Content-Type", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "DNT", "Host", "Origin", "Pragma", "Referer"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+	registerAPI(r)
+	_ = http.ListenAndServe(":8081", r)
+}
+
+func registerAPI(r *chi.Mux) {
+	r.Route("/", func(r chi.Router) {
+		// use the Bearer Authentication middleware
+		r.Use(oauth.Authorize("mySecretKey-10101", nil))
+		r.Get("/customers", GetCustomers)
+		r.Get("/customers/{id}/orders", GetOrders)
+	})
+}
+```
+
+----------------------------------------
+
+TITLE: Creating a Simple Go Chi Authentication Middleware
+DESCRIPTION: This Go code defines a custom authentication middleware function for the chi router. It expects username and password in the request headers, checks them against the in-memory store, and if valid, adds the username to the request context before passing the request to the next handler. It's noted as a simplified example not suitable for production.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_8
+
+LANGUAGE: go
+CODE:
+```
+// AuthMiddleware expects username and password in Header
+// This is only to show you how to use middleware
+// This is not at all meant for production
+func AuthMiddleware(store *Store) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var resp = map[string]interface{}{"error": "unauthorized", "message": "missing authorization"}
+			var username = r.Header.Get("username")
+			var password = r.Header.Get("password")
+			username = strings.TrimSpace(username)
+			password = strings.TrimSpace(password)
+			if username == "" || password == "" {
+				JSON(w, http.StatusUnauthorized, resp)
+				return
+			}
+			// Confirming username and password are correct
+			user, err := store.GetUser(username)
+			if err != nil {
+				resp["message"] = err.Error()
+				JSON(w, http.StatusUnauthorized, resp)
+				return
+			}
+		if user.Password != password {
+				resp["message"] = "password is incorrect"
+				JSON(w, http.StatusUnauthorized, resp)
+				return
+			}
+			// Setting username in context
+			ctx := context.WithValue(r.Context(), "username", username)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
+```
+
+----------------------------------------
+
+TITLE: Using GetHead Middleware - Go
+DESCRIPTION: This Go example shows how to apply the `middleware.GetHead` middleware to a chi router. This middleware automatically handles HEAD requests by routing them to the corresponding GET handler if a specific HEAD handler is not defined.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_8
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.GetHead)
+  r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Using Compress Middleware - Go
+DESCRIPTION: This Go example demonstrates how to use the `middleware.Compress` with a chi router. It enables response compression for specified content types based on the `Accept-Encoding` header, using a given compression level (e.g., 5).
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_5
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.Compress(5, "text/html", "text/css"))
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Simulating an In-Memory Database Store in Go
+DESCRIPTION: This Go code defines a `Store` struct with maps to simulate an in-memory database for Users and TODOs. It includes methods for common data operations like `GetUser`, `AddUser`, `CreateTodo`, `GetAllToDo`, `DeleteToDo`, and `ModifyToDo`, providing basic CRUD functionality for the defined models.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_5
+
+LANGUAGE: go
+CODE:
+```
+// Store is used to replicate a database store
+type Store struct {
+	Users map[string]User // username:User
+	TODOs map[int32]Todo  // id:Todo
+}
+
+// GetUser gets the User Model from Store by username
+func (s *Store) GetUser(username string) (User, error) {
+	user, ok := s.Users[username]
+	if !ok {
+		return User{}, fmt.Errorf("user with username: %s, does not exist", username)
+	}
+	return user, nil
+}
+
+// AddUser creates a new user and adds it to the store
+func (s *Store) AddUser(user User) error {
+	_, ok := s.Users[user.Username]
+	if ok {
+		return fmt.Errorf("user with username: %s, already exists", user.Username)
+	}
+	s.Users[user.Username] = user
+	return nil
+}
+
+// CreateTodo creates a new todo and stores it in the store
+func (s *Store) CreateTodo(body string, username string) {
+	id := int32(len(s.TODOs) + 1)
+	s.TODOs[id] = Todo{
+		ID:       id,
+		Body:     body,
+		Username: username,
+		Done:     false,
+	}
+	fmt.Println(s.TODOs)
+}
+
+// GetAllToDo gets all todos created by a user
+func (s *Store) GetAllToDo(username string) (todos []Todo) {
+	fmt.Println(s.TODOs)
+	for i := 1; i <= len(s.TODOs); i++ {
+		todo := s.TODOs[int32(i)]
+		fmt.Println(todo, username)
+		if todo.Username == username {
+			fmt.Println(todo)
+			todos = append(todos, todo)
+		}
+	}
+	return
+}
+
+// DeleteToDo deletes the todo from the store
+func (s *Store) DeleteToDo(id int32) error {
+	_, ok := s.TODOs[id]
+	if !ok {
+		return fmt.Errorf("todo with id: %v, does not exist", id)
+	}
+	delete(s.TODOs, id)
+	return nil
+}
+
+// ModifyToDo modifies the todo in the store
+func (s *Store) ModifyToDo(id int32, body string, done bool, username string) error {
+	todo, ok := s.TODOs[id]
+	if !ok {
+		return fmt.Errorf("todo with id: %v, does not exist", id)
+	}
+	if todo.Username != username {
+		return fmt.Errorf("you are not the owner of this todo")
+	}
+	todo.Body = body
+	todo.Done = done
+	s.TODOs[id] = todo
+	return nil
+}
+```
+
+----------------------------------------
+
+TITLE: Implementing CORS with go-chi/cors - Go
+DESCRIPTION: This Go example demonstrates configuring CORS using the `go-chi/cors` middleware. It shows how to initialize the middleware with various options like allowed origins, methods, headers, and maximum age, applying it as a top-level middleware on the chi router.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_7
+
+LANGUAGE: go
+CODE:
+```
+func main() {
+  r := chi.NewRouter()
+
+  // Basic CORS
+  // for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+  r.Use(cors.Handler(cors.Options{
+    // AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+    AllowedOrigins:   []string{"https://*", "http://*"},
+    // AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+    AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+    ExposedHeaders:   []string{"Link"},
+    AllowCredentials: false,
+    MaxAge:           300, // Maximum value not ignored by any of major browsers
+  }))
+
+  r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("welcome"))
+  })
+
+  http.ListenAndServe(":3000", r)
+}
+```
+
+----------------------------------------
+
+TITLE: Setting up OAuth 2.0 Authorization Server - Go
+DESCRIPTION: This Go example demonstrates setting up a basic OAuth 2.0 Authorization Server using `go-chi/oauth`. It includes CORS configuration, logger, and recoverer middleware, and registers endpoints (`/token`, `/auth`) for user credentials and client credentials grants.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_12
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import(
+    "errors"
+    "net/http"
+    "time"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi/v5/middleware"
+    "github.com/go-chi/cors"
+    "github.com/go-chi/oauth"
+)
+
+func main() {
+  r := chi.NewRouter()
+  r.Use(middleware.Logger)
+  r.Use(middleware.Recoverer)
+  r.Use(cors.Handler(cors.Options{
+    AllowedOrigins:   []string{"*"},
+    AllowedMethods:   []string{"GET", "PUT", "POST", "DELETE", "HEAD", "OPTION"},
+    AllowedHeaders:   []string{"User-Agent", "Content-Type", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "DNT", "Host", "Origin", "Pragma", "Referer"},
+    ExposedHeaders:   []string{"Link"},
+    AllowCredentials: true,
+    MaxAge:           300, // Maximum value not ignored by any of major browsers
+  }))
+  registerAPI(r)
+  _ = http.ListenAndServe(":8080", r)
+}
+
+func registerAPI(r *chi.Mux) {
+  s := oauth.NewBearerServer(
+    "mySecretKey-10101",
+    time.Second*120,
+    &TestUserVerifier{},
+    nil)
+  r.Post("/token", s.UserCredentials)
+  r.Post("/auth", s.ClientCredentials)
+}
+```
+
+----------------------------------------
+
+TITLE: Using Logger and Recoverer Middleware - Go
+DESCRIPTION: This Go example illustrates the recommended order for using `middleware.Logger` and `middleware.Recoverer`. The Logger captures request details, while Recoverer handles panics; Logger should be placed before Recoverer to ensure panics are logged before recovery.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_10
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.Logger)        // <--<< Logger should come before Recoverer
+  r.Use(middleware.Recoverer)
+  r.Get("/", handler)
+}
+```
+
+----------------------------------------
+
+TITLE: Using AllowContentEncoding Middleware - Go
+DESCRIPTION: This Go example shows how to initialize a chi router and apply the `middleware.AllowContentEncoding` to enforce a whitelist of allowed `Content-Encoding` headers. Requests with disallowed encoding will receive a 415 Unsupported Media Type response.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_2
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main() {
+  r := chi.NewRouter()
+  r.Use(middleware.AllowContentEncoding("deflate", "gzip"))
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Using CleanPath Middleware - Go
+DESCRIPTION: This Go example shows how to integrate the `middleware.CleanPath` into a chi router's middleware chain. This middleware automatically normalizes request paths by removing duplicate slashes.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_4
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.CleanPath)
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Implementing Go Chi API Handlers
+DESCRIPTION: This Go code defines several HTTP handler functions for a CRUD API (SignUp, CreateTodo, GetAllToDo, DeleteToDo, ModifyToDo). Each handler takes a `Store` reference, parses request bodies or URL parameters, interacts with the store, and sends JSON responses using the `JSON` utility function, including context-based user identification.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_7
+
+LANGUAGE: go
+CODE:
+```
+// SignUpHandler responsds to /auth/signup
+// it is used for creating a user
+func SignUpHandler(store *Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resp := map[string]string{"error": "something unexpected occurred"}
+
+		decoder := json.NewDecoder(r.Body) // "encoding/json"
+		params := &User{}
+		err := decoder.Decode(params) // Parsing request and storing it in a User Model
+		if err != nil {
+			log.Println(err)
+			JSON(w, 500, resp)
+			return
+		}
+		// Checking for empty username or password
+		if params.Username == "" || params.Password == "" {
+			resp["error"] = "username and password are required"
+			JSON(w, 400, resp)
+			return
+		}
+		err = store.AddUser(*params)
+		if err != nil {
+			resp["error"] = err.Error()
+			JSON(w, 400, resp)
+		}
+		JSON(w, 201, map[string]string{"response": "user created"})
+	}
+}
+
+// CreateToDoHandler responds to POST /todo/create
+// it creates a new todo model
+func CreateToDoHandler(store *Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resp := map[string]string{"error": "something unexpected occurred"}
+		decoder := json.NewDecoder(r.Body)
+		params := &Todo{}
+		err := decoder.Decode(params)
+		if err != nil {
+			log.Println(err)
+			JSON(w, 500, resp)
+			return
+		}
+		if params.Body == "" {
+			resp["error"] = "body is required"
+			JSON(w, 400, resp)
+			return
+		}
+
+		// Getting Username of Logged In User set by auth middleware
+		params.Username = r.Context().Value("username").(string)
+		store.CreateTodo(params.Body, params.Username)
+		JSON(w, 201, map[string]string{"response": "todo created"})
+	}
+}
+
+// GetAllToDoHandler responds to GET /todo/all
+// returns all todo related to a user
+func GetAllToDoHandler(store *Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		todos := store.GetAllToDo(r.Context().Value("username").(string))
+		JSON(w, 200, todos)
+	}
+}
+
+// DeleteToDoHandler responds to DELETE /todo/delete/{id}
+// it deletes the todo if it exists and was created by the logged in user
+func DeleteToDoHandler(store *Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp map[string]interface{} = map[string]interface{}{
+			"error": "something unexpected occurred",
+		}
+
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			resp["error"] = "Invalid Todo ID"
+			JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+		todo, ok := store.TODOs[int32(id)]
+		if !ok {
+			resp["error"] = fmt.Sprintf("todo with id: %v, does not exist", id)
+			JSON(w, 404, resp)
+			return
+		}
+		if todo.Username != r.Context().Value("username").(string) {
+			resp["error"] = "You are not the owner of this todo"
+			JSON(w, 403, resp)
+			return
+		}
+		delete(store.TODOs, int32(id))
+		resp["response"] = "deleted todo"
+		delete(resp, "error") // Remove error key if successful
+		JSON(w, 200, resp)
+	}
+}
+
+func ModifyToDoHandler(store *Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resp := map[string]string{"error": "something unexpected occurred"}
+		decoder := json.NewDecoder(r.Body)
+		params := &Todo{}
+		err := decoder.Decode(params)
+		if err != nil {
+			log.Println(err)
+			JSON(w, 500, resp)
+			return
+		}
+		if params.Body == "" || params.ID == 0 {
+			resp["error"] = "body and id are required"
+			JSON(w, 400, resp)
+			return
+		}
+
+		params.Username = r.Context().Value("username").(string)
+		err = store.ModifyToDo(params.ID, params.Body, params.Done, params.Username)
+		// store.CreateToDo(params.Body, params.Username)
+		if err != nil {
+			resp["error"] = err.Error()
+			JSON(w, 400, resp)
+			return
+		}
+		JSON(w, 201, map[string]string{"response": "todo modified"})
+	}
+}
+
+```
+
+----------------------------------------
+
+TITLE: Implementing JWT Authentication with go-chi
+DESCRIPTION: This Go code snippet demonstrates the setup of JWT authentication using go-chi/jwtauth. It initializes a JWTAuth instance, generates a sample token, defines a go-chi router, applies the jwtauth.Verifier and jwtauth.Authenticator middleware to a protected route group, and shows how to access user claims from the context.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_28
+
+LANGUAGE: Go
+CODE:
+```
+package main
+
+import (
+  "fmt"
+  "net/http"
+
+  "github.com/go-chi/chi/v5"
+  "github.com/go-chi/jwtauth/v5"
+)
+
+var tokenAuth *jwtauth.JWTAuth
+
+func init() {
+  tokenAuth = jwtauth.New("HS256", []byte("secret"), nil) // replace with secret key
+
+  // For debugging/example purposes, we generate and print
+  // a sample jwt token with claims `user_id:123` here:
+  _, tokenString, _ := tokenAuth.Encode(map[string]interface{}{"user_id": 123})
+  fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
+}
+
+func main() {
+  addr := ":3333"
+  fmt.Printf("Starting server on %v\n", addr)
+  http.ListenAndServe(addr, router())
+}
+
+func router() http.Handler {
+  r := chi.NewRouter()
+
+  // Protected routes
+  r.Group(func(r chi.Router) {
+    // Seek, verify and validate JWT tokens
+    r.Use(jwtauth.Verifier(tokenAuth))
+
+    // Handle valid / invalid tokens. In this example, we use
+    // the provided authenticator middleware, but you can write your
+    // own very easily, look at the Authenticator method in jwtauth.go
+    // and tweak it, its not scary.
+    r.Use(jwtauth.Authenticator)
+
+    r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
+      _, claims, _ := jwtauth.FromContext(r.Context())
+      w.Write([]byte(fmt.Sprintf("protected area. hi %v", claims["user_id"])))
+    })
+  })
+
+  // Public routes
+  r.Group(func(r chi.Router) {
+    r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+      w.Write([]byte("welcome anonymous"))
+    })
+  })
+
+  return r
+}
+```
+
+----------------------------------------
+
+TITLE: Using Heartbeat Middleware - Go
+DESCRIPTION: This Go example demonstrates adding a heartbeat endpoint using `middleware.Heartbeat`. It sets up a simple path (e.g., '/') that responds with a 200 status and a simple body, useful for health checks by load balancers or monitoring services.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_9
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.Heartbeat("/"))
+}
+```
+
+----------------------------------------
+
+TITLE: Using NoCache Middleware - Go
+DESCRIPTION: This Go example shows how to apply the `middleware.NoCache` to a chi router. This middleware adds HTTP headers designed to prevent caching by upstream proxies or clients, including `Expires`, `Cache-Control`, `X-Accel-Expires`, and `Pragma`.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_11
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.NoCache)
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Accessing Protected Resource Server Endpoints (HTTP)
+DESCRIPTION: These HTTP request examples illustrate how to access protected API endpoints on the resource server (shown in a preceding Go example). Requests must include the obtained OAuth access token in the `Authorization: Bearer {access_token}` header.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_16
+
+LANGUAGE: HTTP
+CODE:
+```
+   Resource Server Example
+
+	Get Customers
+
+		GET http://localhost:3200/customers
+		User-Agent: Fiddler
+		Host: localhost:3200
+		Content-Length: 0
+		Content-Type: application/json
+		Authorization: Bearer {access_token}
+
+	Get Orders
+
+		GET http://localhost:3200/customers/12345/orders
+		User-Agent: Fiddler
+		Host: localhost:3200
+		Content-Length: 0
+		Content-Type: application/json
+		Authorization: Bearer {access_token}
+
+	{access_token} is produced by the Authorization Server response (see example /test/authserver).
+
+```
+
+----------------------------------------
+
+TITLE: Using AllowContentType Middleware - Go
+DESCRIPTION: This Go example demonstrates how to use the `middleware.AllowContentType` with a chi router. It restricts incoming requests to specific `Content-Type` headers, returning a 415 status for requests with other content types.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_3
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  r.Use(middleware.AllowContentType("application/json","text/xml"))
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Using ContentCharset Middleware - Go
+DESCRIPTION: This Go example shows how to apply the `middleware.ContentCharset` middleware to a chi router. It validates the charset specified in the request's `Content-Type` header against a list of allowed charsets, responding with a 415 error if no match is found.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_6
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+  r := chi.NewRouter()
+  allowedCharsets := []string{"UTF-8", "Latin-1", ""}
+  r.Use(middleware.ContentCharset(allowedCharsets...))
+  r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
+
+----------------------------------------
+
+TITLE: Creating a Go JSON Response Utility Function
+DESCRIPTION: This Go function provides a simple utility to send well-formatted JSON responses with a specified HTTP status code. It handles JSON encoding and writes the response to the `http.ResponseWriter`, including basic error handling if encoding fails.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_6
+
+LANGUAGE: go
+CODE:
+```
+// JSON returns a well formatted response with a status code
+func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
+	w.WriteHeader(statusCode)
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		w.WriteHeader(500)
+		er := json.NewEncoder(w).Encode(map[string]interface{}{"error": "something unexpected occurred."})
+		if er != nil {
+			return
+		}
+	}
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Go Structs for API Models
+DESCRIPTION: This Go code defines simple struct models for `Todo` and `User`. These structs represent the data structures used in the API, with JSON struct tags (`json:"..."`) to control how they are serialized and deserialized to/from JSON.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_4
+
+LANGUAGE: go
+CODE:
+```
+// Todo struct is a model for creating todos
+type Todo struct {
+	ID       int32  `json:"id"`
+	Body     string `json:"body"`
+	Username string `json:"username"`
+	Done     bool   `json:"done"`
+}
+
+// User struct is a model for users
+type User struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Standard HTTP Route Handlers in Chi
+DESCRIPTION: Defines the method signatures provided by `chi.Router` for registering handlers (`http.HandlerFunc` or `http.Handler`) for standard HTTP methods (CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE) at a specific URL `pattern`.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_0
+
+LANGUAGE: go
+CODE:
+```
+// HTTP-method routing along `pattern`
+Connect(pattern string, h http.HandlerFunc)
+Delete(pattern string, h http.HandlerFunc)
+Get(pattern string, h http.HandlerFunc)
+Head(pattern string, h http.HandlerFunc)
+Options(pattern string, h http.HandlerFunc)
+Patch(pattern string, h http.HandlerFunc)
+Post(pattern string, h http.HandlerFunc)
+Put(pattern string, h http.HandlerFunc)
+Trace(pattern string, h http.HandlerFunc)
+```
+
+----------------------------------------
+
+TITLE: Creating JSON Content-Type Middleware with chi in Go
+DESCRIPTION: Defines a standard Go HTTP handler middleware function. It intercepts requests and sets the Content-Type response header to "application/json" before passing the request to the next handler in the chain. This ensures all responses passing through this middleware will be treated as JSON. It takes the next http.Handler as input and returns a new http.Handler.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/quickstart.md#_snippet_9
+
+LANGUAGE: Go
+CODE:
+```
+// SetContentTypeMiddleware sets content-type to json
+func SetContentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
+}
+```
+
+----------------------------------------
+
+TITLE: Routing Based on Host Header using RouteHeaders (Go)
+DESCRIPTION: This Go example demonstrates using `middleware.RouteHeaders` to route requests to different chi routers based on the `Host` header. It shows how to define multiple routing rules within the middleware based on header value matching. Requires the `github.com/go-chi/chi/v5/middleware` package.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_21
+
+LANGUAGE: go
+CODE:
+```
+r := chi.NewRouter()
+rSubdomain := chi.NewRouter()
+
+r.Use(middleware.RouteHeaders().
+  Route("Host", "example.com", middleware.New(r)).
+  Route("Host", "*.example.com", middleware.New(rSubdomain)).
+  Handler)
+
+r.Get("/", h)
+rSubdomain.Get("/", h2)
+
+```
+
+----------------------------------------
+
+TITLE: Generating OAuth Token using Client Credentials (HTTP)
+DESCRIPTION: This HTTP request example demonstrates how to obtain an OAuth 2.0 access token using the client_credentials grant type. It requires sending the client ID and secret in the request body using `application/x-www-form-urlencoded` format.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_13
+
+LANGUAGE: HTTP
+CODE:
+```
+POST http://localhost:3000/auth
+    User-Agent: Fiddler
+    Host: localhost:3000
+    Content-Length: 66
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=client_credentials&client_id=abcdef&client_secret=12345
+```
+
+----------------------------------------
+
+TITLE: Routing Based on Origin Header using RouteHeaders for CORS (Go)
+DESCRIPTION: This Go example illustrates using `middleware.RouteHeaders` to apply different CORS handlers based on the `Origin` header. It allows configuring distinct CORS policies, such as enabling credentials for trusted origins while disabling them for others. Requires the `github.com/go-chi/chi/v5/middleware` and `github.com/go-chi/cors` packages.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_22
+
+LANGUAGE: go
+CODE:
+```
+r := chi.NewRouter()
+
+r.Use(middleware.RouteHeaders().
+  Route("Origin", "https://app.skyweaver.net", cors.Handler(cors.Options{
+     AllowedOrigins:   []string{"https://api.skyweaver.net"},
+     AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+     AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+     AllowCredentials: true, // <----------<<< allow credentials
+  })).
+  Route("Origin", "*", cors.Handler(cors.Options{
+     AllowedOrigins:   []string{"*"},
+     AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+     AllowedHeaders:   []string{"Accept", "Content-Type"},
+     AllowCredentials: false, // <----------<<< do not allow credentials
+  })).
+  Handler)
+```
+
+----------------------------------------
+
+TITLE: Reading Context Value in Handler - Go
+DESCRIPTION: This Go handler function demonstrates how to retrieve a value ('user') previously set on the request context by a middleware (like `MyMiddleware`). It accesses the context via `r.Context()` and uses `Value()` to get the key's value, then responds to the client using this value.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    // here we read from the request context and fetch out `"user"` key set in
+    // the MyMiddleware example above.
+    user := r.Context().Value("user").(string)
+
+    // respond to the client
+    w.Write([]byte(fmt.Sprintf("hi %s", user)))
+}
+```
+
+----------------------------------------
+
+TITLE: Handling Request Timeout with Timeout Middleware (Go)
+DESCRIPTION: This Go snippet provides a handler example demonstrating how to respect the context cancellation signal provided by the `middleware.Timeout`. Handlers should select on `ctx.Done()` to detect timeouts and terminate processing gracefully, preventing work from continuing past the deadline. Requires the `time` package.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_26
+
+LANGUAGE: go
+CODE:
+```
+ r.Get("/long", func(w http.ResponseWriter, r *http.Request) {
+   ctx := r.Context()
+   processTime := time.Duration(rand.Intn(4)+1) * time.Second
+
+   select {
+   case <-ctx.Done():
+     return
+
+   case <-time.After(processTime):
+      // The above channel simulates some hard work.
+   }
+
+   w.Write([]byte("done"))
+ })
+```
+
+----------------------------------------
+
+TITLE: Refreshing OAuth Token using Refresh Token Grant (HTTP)
+DESCRIPTION: This HTTP request example shows how to refresh an expired OAuth 2.0 access token using a previously obtained refresh token. The request uses the `refresh_token` grant type and includes the token in the request body.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_14
+
+LANGUAGE: HTTP
+CODE:
+```
+POST http://localhost:3000/token
+    User-Agent: Fiddler
+    Host: localhost:3000
+    Content-Length: 50
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=refresh_token&refresh_token={the refresh_token obtained in the previous response}
+
+
+```
+
+----------------------------------------
+
+TITLE: Creating a Basic Go-Chi Server
+DESCRIPTION: Sets up a minimal HTTP server using the go-chi router, including a simple handler for the root path and basic logging middleware. It defines a Server struct to hold the router and potentially other dependencies, and provides functions for server initialization and handler mounting.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/testing.md#_snippet_0
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+func main() {
+	s := CreateNewServer()
+	s.MountHandlers()
+	http.ListenAndServe(":3000", s.Router)
+}
+
+// HelloWorld api Handler
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello World!"))
+}
+
+type Server struct {
+	Router *chi.Mux
+	// Db, config can be added here
+}
+
+func CreateNewServer() *Server {
+	s := &Server{}
+	s.Router = chi.NewRouter()
+	return s
+}
+
+func (s *Server) MountHandlers() {
+	// Mount all Middleware here
+	s.Router.Use(middleware.Logger)
+
+	// Mount all handlers here
+	s.Router.Get("/", HelloWorld)
+
+}
+```
+
+----------------------------------------
+
+TITLE: Mounting a Chi Sub-Router
+DESCRIPTION: Demonstrates creating a separate `chi.Router` instance (`apiRouter`) and then attaching it to the main router (`r`) at a specific base path (`/api`) using `r.Mount()`. This modularizes routing logic.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_4
+
+LANGUAGE: go
+CODE:
+```
+func main(){
+    r := chi.NewRouter()
+    r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+        w.Write([]byte("Hello World!"))
+    })
+
+    // Creating a New Router
+    apiRouter := chi.NewRouter()
+    apiRouter.Get("/articles/{date}-{slug}", getArticle)
+
+    // Mounting the new Sub Router on the main router
+    r.Mount("/api", apiRouter)
+}
+```
+
+----------------------------------------
+
+TITLE: Testing Go-Chi Handlers with httptest
+DESCRIPTION: Demonstrates how to write unit tests for go-chi HTTP handlers using Go's built-in `httptest` package and `testify/require` for assertions. Includes utility functions to execute requests against the router and check response codes, and a specific test case for the "Hello World" endpoint.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/testing.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+package main
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+// executeRequest, creates a new ResponseRecorder
+// then executes the request by calling ServeHTTP in the router
+// after which the handler writes the response to the response recorder
+// which we can then inspect.
+func executeRequest(req *http.Request, s *Server) *httptest.ResponseRecorder {
+	rr := httptest.NewRecorder()
+	s.Router.ServeHTTP(rr, req)
+
+	return rr
+}
+
+// checkResponseCode is a simple utility to check the response code
+// of the response
+func checkResponseCode(t *testing.T, expected, actual int) {
+	if expected != actual {
+		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+	}
+}
+
+func TestHelloWorld(t *testing.T) {
+    // Create a New Server Struct
+	s := CreateNewServer()
+    // Mount Handlers
+	s.MountHandlers()
+
+    // Create a New Request
+	req, _ := http.NewRequest("GET", "/", nil)
+
+    // Execute Request
+	response := executeRequest(req, s)
+
+    // Check the response code
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+    // We can use testify/require to assert values, as it is more convenient
+	require.Equal(t, "Hello World!", response.Body.String())
+}
+```
+
+----------------------------------------
+
+TITLE: Mounting Profiler Middleware in Go-chi (Go)
+DESCRIPTION: This Go snippet shows how to mount the `middleware.Profiler` subrouter in a go-chi application. Mounting it at a specific path (e.g., `/debug`) makes standard net/http/pprof profiles available at that endpoint for debugging. Requires the `github.com/go-chi/chi/v5/middleware` package.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_17
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+ func main(){
+   r := chi.NewRouter()
+   // ..middlewares
+   r.Mount("/debug", middleware.Profiler())
+   // ..routes
+}
+```
+
+----------------------------------------
+
+TITLE: Implementing Custom Middleware - Go
+DESCRIPTION: This Go function demonstrates how to create a standard net/http middleware that sets a value ('user' with value '123') on the request context using `context.WithValue`. It then calls the next handler in the chain with the updated request context.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_0
+
+LANGUAGE: go
+CODE:
+```
+// HTTP middleware setting a value on the request context
+func MyMiddleware(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    // create new context from `r` request context, and assign key `"user"`
+    // to value of `"123"`
+    ctx := context.WithValue(r.Context(), "user", "123")
+
+    // call the next handler in the chain, passing the response writer and
+    // the updated request object with the new context value.
+    //
+    // note: context.Context values are nested, so any previously set
+    // values will be accessible as well, and the new `"user"` key
+    // will be accessible from this point forward.
+    next.ServeHTTP(w, r.WithContext(ctx))
+  })
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Route Blocks with chi.Route
+DESCRIPTION: Illustrates using `r.Route()` to group routes under a common path prefix (`/articles`). This method allows for applying middleware (`r.Use`) or defining nested sub-routes within the block.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_5
+
+LANGUAGE: go
+CODE:
+```
+r.Route("/articles", func(r chi.Router) {
+    r.With(paginate).Get("/", listArticles)                           // GET /articles
+    r.With(paginate).Get("/{month}-{day}-{year}", listArticlesByDate) // GET /articles/01-16-2017
+
+    r.Post("/", createArticle)                                        // POST /articles
+    r.Get("/search", searchArticles)                                  // GET /articles/search
+
+    // Regexp url parameters:
+    r.Get("/{articleSlug:[a-z-]+}", getArticleBySlug)                // GET /articles/home-is-toronto
+
+    // Subrouters:
+    r.Route("/{articleID}", func(r chi.Router) {
+      r.Use(ArticleCtx)
+      r.Get("/", getArticle)                                          // GET /articles/123
+      r.Put("/", updateArticle)                                       // PUT /articles/123
+      r.Delete("/", deleteArticle)                                    // DELETE /articles/123
+    })
+  })
+```
+
+----------------------------------------
+
+TITLE: Routing and Extracting Named URL Parameters in Chi
+DESCRIPTION: Demonstrates defining a route with named parameters (e.g., `{date}`, `{slug}`) and implementing a handler function (`getArticle`) that extracts these parameter values using `chi.URLParam()` from the request context.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_1
+
+LANGUAGE: go
+CODE:
+```
+r := chi.NewRouter()
+
+r.Get("/articles/{date}-{slug}", getArticle)
+
+func getArticle(w http.ResponseWriter, r *http.Request) {
+  dateParam := chi.URLParam(r, "date")
+  slugParam := chi.URLParam(r, "slug")
+  article, err := database.GetArticle(dateParam, slugParam)
+
+  if err != nil {
+    w.WriteHeader(422)
+    w.Write([]byte(fmt.Sprintf("error fetching article %s-%s: %v", dateParam, slugParam, err)))
+    return
+  }
+  
+  if article == nil {
+    w.WriteHeader(404)
+    w.Write([]byte("article not found"))
+    return
+  }
+  w.Write([]byte(article.Text()))
+}
+```
+
+----------------------------------------
+
+TITLE: Routing with Regex URL Parameter Constraints in Chi
+DESCRIPTION: Illustrates how to define a route where a named URL parameter (`rid`) must match a specified regular expression pattern (`^[0-9]{5,6}`). Only paths matching both the pattern and the regex will trigger the handler.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_2
+
+LANGUAGE: go
+CODE:
+```
+r := chi.NewRouter()
+r.Get("/articles/{rid:^[0-9]{5,6}}", getArticle)
+```
+
+----------------------------------------
+
+TITLE: Grouping Routes for Shared Middleware in Chi
+DESCRIPTION: Shows how to use `r.Group()` to define separate sets of routes within a router. This pattern is useful for applying middleware (like `AuthMiddleware` for private routes) to specific groups while leaving others publicly accessible.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/routing.md#_snippet_6
+
+LANGUAGE: go
+CODE:
+```
+func main(){
+    r := chi.NewRouter()
+    
+    // Public Routes
+    r.Group(func(r chi.Router) {
+		r.Get("/", HelloWorld)
+		r.Get("/{AssetUrl}", GetAsset)
+		r.Get("/manage/url/{path}", FetchAssetDetailsByURL)
+		r.Get("/manage/id/{path}", FetchAssetDetailsByID)
+	})
+
+	// Private Routes
+    // Require Authentication
+	r.Group(func(r chi.Router) {
+		r.Use(AuthMiddleware)
+		r.Post("/manage", CreateAsset)
+	})
+
+}
+```
+
+----------------------------------------
+
+TITLE: Applying RedirectSlashes Middleware in Go-chi (Go)
+DESCRIPTION: This Go snippet shows how to include the `middleware.RedirectSlashes` middleware. It automatically redirects paths with a trailing slash (e.g., `/foo/`) to their non-trailing slash equivalent (e.g., `/foo`). Note its incompatibility with `http.FileServer`. Requires the `github.com/go-chi/chi/v5/middleware` package.
+
+SOURCE: https://github.com/go-chi/docs/blob/master/pages/middleware.md#_snippet_20
+
+LANGUAGE: go
+CODE:
+```
+import (
+  "github.com/go-chi/chi/v5/middleware"
+)
+
+func main(){
+   r := chi.NewRouter()
+   r.Use(middleware.RedirectSlashes)
+   r.Post("/", func(w http.ResponseWriter, r *http.Request) {})
+}
+```
