@@ -59,12 +59,29 @@ func CreateSession(ctx context.Context, db *sql.DB, userID int64, tokenHash stri
 	if err != nil {
 		return 0, err
 	}
-	last, err := res.LastInsertId()
+	tlast, err := res.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
 	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
-	return last, nil
+	return tlast, nil
+}
+
+// GetSessionByHash looks up a session row by token_hash and checks active/expiry.
+func GetSessionByHash(ctx context.Context, db *sql.DB, tokenHash string) (*Session, error) {
+	row := db.QueryRowContext(ctx, `SELECT id, user_id, token_hash, created_at, expires_at, active FROM sessions WHERE token_hash = ? LIMIT 1`, tokenHash)
+	var s Session
+	var createdAtUnix, expiresAtUnix int64
+	if err := row.Scan(&s.ID, &s.UserID, &s.TokenHash, &createdAtUnix, &expiresAtUnix, &s.Active); err != nil {
+		return nil, err
+	}
+	s.CreatedAt = time.Unix(createdAtUnix, 0)
+	s.ExpiresAt = time.Unix(expiresAtUnix, 0)
+	// check active and expiry
+	if !s.Active || time.Now().After(s.ExpiresAt) {
+		return nil, sql.ErrNoRows
+	}
+	return &s, nil
 }
