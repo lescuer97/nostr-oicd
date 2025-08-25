@@ -7,11 +7,12 @@ import (
 
 // Config holds application configuration loaded from environment variables.
 type Config struct {
-	JWTSecret    string
-	CookieName   string
-	CookieSecure bool
-	DatabasePath string
-	Port         string
+	JWTSecret         string
+	SessionSigningKey string
+	CookieName        string
+	CookieSecure      bool
+	DatabasePath      string
+	Port              string
 }
 
 // LoadFromEnv loads configuration from environment variables with sensible defaults.
@@ -21,6 +22,7 @@ func LoadFromEnv() *Config {
 	if cfg.JWTSecret == "" {
 		cfg.JWTSecret = "replace_with_a_strong_random_secret"
 	}
+	cfg.SessionSigningKey = os.Getenv("SESSION_SIGNING_KEY")
 	cfg.CookieName = os.Getenv("COOKIE_NAME")
 	if cfg.CookieName == "" {
 		cfg.CookieName = "nostr_oicd_session"
