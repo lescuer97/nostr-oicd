@@ -3,14 +3,18 @@ package layout
 // Base layout component. `contents` is a templ.Component passed in by pages.
 // user is a string containing the user's public key or empty when unauthenticated.
 templ Base(user string, title string, contents templ.Component) {
+	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<meta charset="utf-8" />
-			<meta name="viewport" content="width=device-width,initial-scale=1" />
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width,initial-scale=1"/>
 			<title>{ title }</title>
 			<script src="https://cdn.tailwindcss.com"></script>
+			<!-- HTMX (from CDN) -->
+			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.2" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
 		</head>
-		<body class="bg-gray-50 text-gray-900">
+		<body class="bg-gray-50 text-gray-900" hx-ext="head-support">
 			<nav class="bg-white shadow">
 				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div class="flex justify-between h-16">
@@ -31,17 +35,14 @@ templ Base(user string, title string, contents templ.Component) {
 					</div>
 				</div>
 			</nav>
-
 			<main class="py-10">
 				<div class="max-w-3xl mx-auto px-4">
 					@contents
 				</div>
 			</main>
-
 			<footer class="mt-20 text-center text-sm text-gray-500">
 				&copy; nostr-oicd
 			</footer>
-
 			<script src="/static/js/nostr-auth.js"></script>
 		</body>
 	</html>

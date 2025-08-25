@@ -3,12 +3,22 @@ package pages
 import "github.com/lescuer97/nostr-oicd/templates/layouts"
 
 templ LoginPage() {
-	@layout.Base("test user", "Login", loginContent())
+	@layout.Base("", "Login", loginContent())
 }
 
 templ loginContent() {
-	<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
-		<h1 class="text-2xl font-bold mb-4">Sign in with Nostr</h1>
-		<button id="nip7-login" class="w-full bg-blue-600 text-white py-2 rounded">Sign in with NIP-07</button>
+	<div id="login-card" class="max-w-md mx-auto" hx-target="this" hx-swap="outerHTML">
+		<div class="bg-white p-6 rounded shadow">
+			<h1 class="text-2xl font-bold mb-4">Sign in with Nostr</h1>
+			<button
+				id="nip7-login"
+				class="w-full bg-blue-600 text-white py-2 rounded"
+				hx-post="/api/auth/challenge"
+				hx-target="#login-card"
+				hx-swap="outerHTML"
+			>
+				Sign in with NIP-07
+			</button>
+		</div>
 	</div>
 }

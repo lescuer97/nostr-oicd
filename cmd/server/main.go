@@ -12,6 +12,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/lescuer97/nostr-oicd/internal/auth"
 	pages "github.com/lescuer97/nostr-oicd/templates/pages"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -47,6 +48,9 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	// Register auth routes
+	auth.RegisterRoutes(r)
+
 	// Static file server
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
@@ -77,6 +81,7 @@ func main() {
 	}()
 
 	<-ctx.Done()
+
 	log.Println("shutting down gracefully, press Ctrl+C again to force")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

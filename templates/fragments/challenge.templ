@@ -1,0 +1,40 @@
+package fragments
+
+// ChallengeFragment renders the HTMX fragment asking the user to sign the challenge.
+templ ChallengeFragment(ch string) {
+	<div class="bg-white p-6 rounded shadow">
+		<h2 class="text-lg font-medium mb-2">Sign the challenge with your NIP-07 key</h2>
+		<p class="text-sm text-gray-600 mb-4">Click the button to sign the challenge in your browser extension.</p>
+		<input type="hidden" id="nostr-challenge" value={ ch }/>
+		<button id="sign-challenge" class="w-full bg-green-600 text-white py-2 rounded">Sign challenge and continue</button>
+	</div>
+	<script>
+		(function () {
+			const btn = document.getElementById("sign-challenge");
+			if (btn) {
+				btn.addEventListener("click", async function () {
+					try {
+						if (!window.nostr || !window.nostr.signEvent) {
+							alert("Nostr NIP-07 extension not found");
+							return;
+						}
+						const challenge = document.getElementById("nostr-challenge").value;
+						const ev = {
+							kind: 2222,
+							content: challenge,
+							created_at: Math.floor(Date.now() / 1000),
+						};
+						const signed = await window.nostr.signEvent(ev);
+						// send signed event to server via HTMX
+						htmx.ajax("POST", "/api/auth/login", {
+							values: { signed_event: JSON.stringify(signed) },
+							headers: {},
+						});
+					} catch (e) {
+						alert("sign failed: " + e);
+					}
+				});
+			}
+		})();
+	</script>
+}
