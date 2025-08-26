@@ -37,8 +37,16 @@ func RegisterRoutes(r chi.Router, cfg *config.Config, db *sql.DB) {
 		user := u.(*models.User)
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := pages.DashboardPage(user.PublicKey).Render(r.Context(), w); err != nil {
+		// render dashboard with admin flag
+		if err := pages.DashboardPage(user.PublicKey, user.IsAdmin).Render(r.Context(), w); err != nil {
 			http.Error(w, "failed to render", http.StatusInternalServerError)
 		}
+	})
+
+	// admin routes
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware(cfg, db))
+		r.Use(middleware.AdminOnly())
+		RegisterAdminRoutes(r, cfg, db)
 	})
 }
