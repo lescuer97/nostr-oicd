@@ -33,10 +33,26 @@ func hmacHash(key []byte, data string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// renderLoginError renders the LoginError fragment with the given message.
+// renderLoginError renders an inline script that shows a toast popup with the provided message.
 func renderLoginError(ctx context.Context, w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_ = fragments.LoginError(msg).Render(ctx, w)
+	b, _ := json.Marshal(msg)
+	// use a small script that calls window.showToast(msg, 'error')
+	_, _ = w.Write([]byte("<script>if(window.showToast){window.showToast(" + string(b) + ", 'error');}else{alert(" + string(b) + ");}</script>"))
+}
+
+// extractChallengeFromEvent returns the challenge string present either in the event content
+// or in a tag of the form ["challenge", "<value>"]. If none found, returns empty string.
+func extractChallengeFromEvent(ev nostr.Event) string {
+	if ev.Content != "" {
+		return ev.Content
+	}
+	for _, t := range ev.Tags {
+		if len(t) >= 2 && t[0] == "challenge" {
+			return t[1]
+		}
+	}
+	return ""
 }
 
 // LoginHandler handles signed nostr event login. It receives the app config and DB via closure
@@ -68,16 +84,29 @@ func LoginHandler(cfg *config.Config, db *sql.DB, w http.ResponseWriter, r *http
 		renderLoginError(ctx, w, "signature verification failed")
 		return
 	}
-	// The event content should be the challenge
-	challenge := ev.Content
+	// Ensure the event is the expected kind
+	if ev.Kind != 2222 {
+		renderLoginError(ctx, w, "unexpected event kind")
+		return
+	}
+	// Extract challenge from content or tags
+	challenge := extractChallengeFromEvent(ev)
+	if challenge == "" {
+		renderLoginError(ctx, w, "missing challenge in event")
+		return
+	}
 	if !ValidateAndDeleteChallenge(challenge) {
 		renderLoginError(ctx, w, "invalid or expired challenge")
 		return
 	}
-	// Ensure user exists
-	userID, err := models.EnsureUser(ctx, db, ev.PubKey)
+	// Ensure user exists (only pre-registered users are allowed to login)
+	userID, err := models.GetUserByPubKey(ctx, db, ev.PubKey)
 	if err != nil {
-		renderLoginError(ctx, w, "failed to create user")
+		if err == sql.ErrNoRows {
+			renderLoginError(ctx, w, "Your key is not authorized. Contact an admin.")
+			return
+		}
+		renderLoginError(ctx, w, "failed to lookup user")
 		return
 	}
 

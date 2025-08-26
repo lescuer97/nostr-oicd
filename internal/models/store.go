@@ -104,3 +104,13 @@ func DeleteExpiredSessions(ctx context.Context, db *sql.DB) (int64, error) {
 	}
 	return n, nil
 }
+
+// GetUserByPubKey retrieves a user id by public key. Returns sql.ErrNoRows if not found.
+func GetUserByPubKey(ctx context.Context, db *sql.DB, pubkey string) (int64, error) {
+	row := db.QueryRowContext(ctx, `SELECT id FROM users WHERE public_key = ? LIMIT 1`, pubkey)
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+	return id, nil
+}

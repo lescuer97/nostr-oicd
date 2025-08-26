@@ -1,4 +1,5 @@
 // NIP-07 helper utilities used by alternative flows or debugging.
+
 // Note: The current login page and fragment do not rely on these helpers directly.
 
 async function checkNostrExtension() {
