@@ -2,7 +2,9 @@ package auth
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"html"
 	"log/slog"
 	"net/http"
 
@@ -39,36 +41,47 @@ func RegisterAdminRoutes(r chi.Router, cfg *config.Config, db *sql.DB) {
 		}
 
 		if err := r.ParseForm(); err != nil {
+			// send hx-trigger notify error
+
+			msgEsc := html.EscapeString("invalid form")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			_ = fragments.AdminMessageError("invalid form").Render(r.Context(), w)
-			slog.Error("admin_add_user_failed", "admin", adminPub, "remote", r.RemoteAddr, "error", err.Error())
+			fmt.Fprintf(w, `<div hx-swap-oob="innerHTML:#htmx-snackbar" remove-me="5s"><div class="p-3 rounded shadow text-sm bg-red-100 text-red-800">%s</div></div>`, msgEsc)
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 		npub := r.FormValue("npub")
 		if npub == "" {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			_ = fragments.AdminMessageError("npub is required").Render(r.Context(), w)
+			payload, _ := json.Marshal(map[string]string{"message": "npub is required", "severity": "error"})
+			w.Header().Set("HX-Trigger", fmt.Sprintf("notify:%s", payload))
 			slog.Warn("admin_add_user_missing_npub", "admin", adminPub, "remote", r.RemoteAddr)
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 		// convert npub to hex public key — npub is bech32 (nip19) encoded pubkey
 		pubHex, err := decodeNpubToHex(npub)
 		if err != nil {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			_ = fragments.AdminMessageError(fmt.Sprintf("invalid npub: %v", err)).Render(r.Context(), w)
+			payload, _ := json.Marshal(map[string]string{"message": fmt.Sprintf("invalid npub: %v", err), "severity": "error"})
+			w.Header().Set("HX-Trigger", fmt.Sprintf("notify:%s", payload))
 			slog.Error("admin_add_user_invalid_npub", "admin", adminPub, "remote", r.RemoteAddr, "npub", npub, "error", err.Error())
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 		ctx := r.Context()
 		// try to ensure user (EnsureUser will create if missing)
 		id, err := models.EnsureUser(ctx, db, pubHex)
 		if err != nil {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			_ = fragments.AdminMessageError(fmt.Sprintf("failed to ensure user: %v", err)).Render(r.Context(), w)
+			payload, _ := json.Marshal(map[string]string{"message": fmt.Sprintf("failed to ensure user: %v", err), "severity": "error"})
+			w.Header().Set("HX-Trigger", fmt.Sprintf("notify:%s", payload))
 			slog.Error("admin_add_user_db_error", "admin", adminPub, "remote", r.RemoteAddr, "pubHex", pubHex, "error", err.Error())
+			w.WriteHeader(http.StatusOK)
 			return
 		}
-		_ = fragments.AdminMessageSuccess(fmt.Sprintf("user added (id=%d)", id)).Render(r.Context(), w)
+
+		// success: notify and return 200 (no body) so only a toast is shown
+		payload, _ := json.Marshal(map[string]string{"message": fmt.Sprintf("user added (id=%d)", id), "severity": "success"})
+		w.Header().Set("HX-Trigger", fmt.Sprintf("notify:%s", payload))
 		slog.Info("admin_add_user_success", "admin", adminPub, "remote", r.RemoteAddr, "pubHex", pubHex, "user_id", id)
+		w.WriteHeader(http.StatusOK)
+		return
 	})).ServeHTTP)
 }

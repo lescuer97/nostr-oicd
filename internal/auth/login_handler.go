@@ -35,10 +35,12 @@ func hmacHash(key []byte, data string) string {
 
 // renderLoginError renders an inline script that shows a toast popup with the provided message.
 func renderLoginError(ctx context.Context, w http.ResponseWriter, msg string) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	b, _ := json.Marshal(msg)
-	// use a small script that calls window.showToast(msg, 'error')
-	_, _ = w.Write([]byte("<script>if(window.showToast){window.showToast(" + string(b) + ", 'error');}else{alert(" + string(b) + ");}</script>"))
+	// Prefer sending an HX-Trigger header so HTMX can trigger a client-side notify event
+	// Prefer returning an OOB fragment to update the stable snackbar via hx-swap-oob
+	w.Header().Set("HX-Retarget", "#htmx-snackbar")
+	w.Header().Set("HX-Reswap", "innerHTML")
+	_ = fragments.SnackbarError(msg, "3s").Render(ctx, w)
+	return
 }
 
 // extractChallengeFromEvent returns the challenge string present either in the event content

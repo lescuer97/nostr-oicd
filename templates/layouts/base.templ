@@ -12,11 +12,12 @@ templ Base(user string, title string, contents templ.Component) {
 			<script src="https://cdn.tailwindcss.com"></script>
 			<!-- HTMX (from CDN) -->
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
-			<script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.2" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
+			<!-- include remove-me extension -->
+			<script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
 		</head>
 		<body class="bg-gray-50 text-gray-900" hx-ext="head-support">
-			<!-- Toast container (for inline popups) -->
-			<div id="toast-container" class="fixed top-5 right-5 space-y-2 z-50" aria-live="polite" aria-atomic="true"></div>
+			<!-- Stable HTMX snackbar (managed via hx-ext=remove-me and hx-swap-oob) -->
+			<div id="htmx-snackbar" class="fixed top-5 right-5 z-50"  hx-ext="remove-me"></div>
 			<nav class="bg-white shadow">
 				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div class="flex justify-between h-16">

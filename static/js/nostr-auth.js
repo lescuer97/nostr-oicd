@@ -20,10 +20,11 @@ async function signEvent(event) {
 // Left for convenience and potential future use in a non-HTMX flow.
 async function singleClickLogin() {
     try {
-        if (!await checkNostrExtension()) {
-            alert('Nostr NIP-07 extension not found');
-            return;
-        }
+    
+    if (!await checkNostrExtension()) {
+        window.showToast('Nostr NIP-07 extension not found', 'error');
+        return;
+    }
         const res = await fetch('/api/auth/challenge?json=1', { credentials: 'same-origin' });
         if (!res.ok) throw new Error('failed to fetch challenge');
         const data = await res.json();
@@ -41,7 +42,7 @@ async function singleClickLogin() {
         const card = document.querySelector('#login-card');
         if (card) card.outerHTML = text;
     } catch (e) {
-        alert('login failed: ' + e);
+        window.showToast('login failed: ' + e, 'error');
     }
 }
 

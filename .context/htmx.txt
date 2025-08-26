@@ -1123,6 +1123,21 @@ $(document).ready(function() {
 
 ----------------------------------------
 
+TITLE: Test Scroll Behavior Setup
+DESCRIPTION: Sets up a test server for HTMX, enabling auto-response and defining a response for GET requests to '/more_divs'. This is used to test scroll behavior and dynamic content loading.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/poll-condition-test.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
 TITLE: Install HTMX Extension via CDN
 DESCRIPTION: Demonstrates how to include the core htmx library and an extension (e.g., response-targets) from a CDN in the HTML head.
 
@@ -1135,21 +1150,6 @@ CODE:
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
 </head>
-```
-
-----------------------------------------
-
-TITLE: Test Scroll Behavior Setup
-DESCRIPTION: Sets up a test server for HTMX, enabling auto-response and defining a response for GET requests to '/more_divs'. This is used to test scroll behavior and dynamic content loading.
-
-SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/poll-condition-test.html#_snippet_0
-
-LANGUAGE: javascript
-CODE:
-```
-server = makeServer();
-server.autoRespond = true;
-server.respondWith("GET", "/more_divs", "<div>More Content</div>");
 ```
 
 ----------------------------------------
@@ -1295,24 +1295,6 @@ zola serve
 
 ----------------------------------------
 
-TITLE: HTMX Trigger with 'delay' and 'changed' Modifiers
-DESCRIPTION: An example of an input field that triggers a GET request to '/trigger_delay' after a 500ms delay if the input value has changed, updating the '#search-results' div.
-
-SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_11
-
-LANGUAGE: html
-CODE:
-```
-<input type="text" name="q"
-    hx-get="/trigger_delay"
-    hx-trigger="keyup changed delay:500ms"
-    hx-target="#search-results"
-    placeholder="Search...">
-<div id="search-results"></div>
-```
-
-----------------------------------------
-
 TITLE: JavaScript Tab Content Handling
 DESCRIPTION: This JavaScript code defines functions to handle GET requests for different tab contents. Each `onGet` function returns the HTML for a specific tab, including the updated tab list with the correct selected state and the corresponding content. This enables dynamic loading of tab content via HTMX.
 
@@ -1366,4 +1348,3026 @@ onGet("/tab1", function() {
 	})
 
 </script>
+```
+
+----------------------------------------
+
+TITLE: HTMX Trigger with 'delay' and 'changed' Modifiers
+DESCRIPTION: An example of an input field that triggers a GET request to '/trigger_delay' after a 500ms delay if the input value has changed, updating the '#search-results' div.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_11
+
+LANGUAGE: html
+CODE:
+```
+<input type="text" name="q"
+    hx-get="/trigger_delay"
+    hx-trigger="keyup changed delay:500ms"
+    hx-target="#search-results"
+    placeholder="Search...">
+<div id="search-results"></div>
+```
+
+----------------------------------------
+
+TITLE: Test Scroll Behavior Setup
+DESCRIPTION: Sets up a test server for scroll behavior tests. It configures the server to automatically respond and defines a specific response for GET requests to '/more_divs'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/poll-clears-on-reinit-test.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: Hypermedia Response Example
+DESCRIPTION: Demonstrates a typical HTML response containing hypermedia links for available actions. This response is used by a hypermedia client to discover and interact with the API.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/two-approaches-to-decoupling.md#_snippet_3
+
+LANGUAGE: http
+CODE:
+```
+HTTP/1.1 200 OK
+
+<html>
+  <body>
+    <div>Account number: 12345</div>
+    <div>Balance: $100.00 USD</div>
+    <div>Links:
+        <a href="/accounts/12345/deposits">deposits</a>
+        <a href="/accounts/12345/withdrawals">withdrawals</a>
+    </div>
+  <body>
+</html>
+```
+
+----------------------------------------
+
+TITLE: Direct Data Store Access with SQL
+DESCRIPTION: Leveraging server-side HTML generation allows direct access to data stores, enabling the use of powerful SQL features like joins and aggregation functions for efficient data retrieval.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_4
+
+LANGUAGE: sql
+CODE:
+```
+SELECT users.name, orders.order_date
+FROM users
+JOIN orders ON users.id = orders.user_id
+WHERE users.id = 123;
+```
+
+----------------------------------------
+
+TITLE: htmx Usage Example
+DESCRIPTION: Demonstrates a basic htmx interaction, showing how HTML attributes can trigger AJAX requests and update parts of the DOM.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-on-whatever-youd-like.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/clicked" hx-swap="outerHTML">Click Me!</button>
+```
+
+----------------------------------------
+
+TITLE: htmx Examples: Click to Edit
+DESCRIPTION: Demonstrates a smooth, interactive editing experience using htmx, moving beyond simple list/detail views.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/when-to-use-hypermedia.md#_snippet_1
+
+LANGUAGE: markdown
+CODE:
+```
+This example showcases a smooth, interactive editing experience using htmx, illustrating its capabilities beyond basic list/detail views in web applications.
+```
+
+----------------------------------------
+
+TITLE: Hypermedia-Friendly Scripting with Alpine.js
+DESCRIPTION: Using libraries like Alpine.js for inline-style scripting refocuses development on HTML and maintains a hypermedia-centric approach, enhancing interactivity without sacrificing core principles.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_5
+
+LANGUAGE: javascript
+CODE:
+```
+<!-- Example using Alpine.js -->
+<div x-data="{ open: false }">
+  <button @click="open = !open">Toggle Section</button>
+  <div x-show="open">
+    Content to toggle.
+  </div>
+</div>
+```
+
+----------------------------------------
+
+TITLE: HTTP Accept Header Example
+DESCRIPTION: Demonstrates the 'Accept' request header in HTTP, which allows clients to indicate preferred MIME types for server responses. It shows how to specify preferences using q-weighting and wildcards.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/why-tend-not-to-use-content-negotiation.md#_snippet_0
+
+LANGUAGE: http
+CODE:
+```
+Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+```
+
+----------------------------------------
+
+TITLE: JavaScript Server Simulation for Keyboard Shortcut Demo
+DESCRIPTION: This JavaScript code simulates server-side routes for an htmx demo. It defines an initial route '/init' that returns an HTML button with the keyboard shortcut trigger and a '/doit' POST route that responds with 'Did it!'. This allows testing the keyboard shortcut functionality without a real backend.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/keyboard-shortcuts.md#_snippet_1
+
+LANGUAGE: javascript
+CODE:
+```
+init("/init", function(request, params){
+    return "<button class='btn primary' style='font-size:20pt' hx-trigger='click, keyup[altKey&&shiftKey&&key==\"D\"] from:body'" +
+                  " hx-post='/doit'>Do It! (alt-shift-D) </button>";
+});
+
+onPost("/doit", function (request, params) {
+    return "Did it!";
+});
+```
+
+----------------------------------------
+
+TITLE: CSS Styling Example
+DESCRIPTION: Demonstrates a basic CSS rule for setting the background color of content elements. This snippet shows how to apply styles directly within the content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/hxboost_partial_template_parsing/other-content.html#_snippet_0
+
+LANGUAGE: css
+CODE:
+```
+body {
+  background: lightgreen;
+}
+```
+
+----------------------------------------
+
+TITLE: Boosted Links Example
+DESCRIPTION: Demonstrates how to use the hx-boost attribute on a parent div to enable AJAX requests for anchor tags. Clicking these links will issue a GET request and replace the body's inner content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-boost.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-boost="true">
+  <a href="/page1">Go To Page 1</a>
+  <a href="/page2">Go To Page 2</a>
+</div>
+```
+
+----------------------------------------
+
+TITLE: YouTube Embed Example
+DESCRIPTION: An example of how to embed a YouTube video using an iframe. This is commonly used to display video content within web pages.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/a-real-world-react-to-htmx-port.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<iframe style="max-width: 100%" width="618" height="352" src="https://www.youtube.com/embed/3GObi93tjZI" title="DjangoCon 2022 | From React to htmx on a real-world SaaS product: we did it, and it's awesome!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
+----------------------------------------
+
+TITLE: Hypermedia APIs vs. Data APIs
+DESCRIPTION: This snippet contrasts Hypermedia APIs with Data APIs, emphasizing that Hypermedia APIs should be specialized for an application's UI needs rather than generalized for consumption by general-purpose clients. It suggests optimizing endpoints for specific UI/UX requirements.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_2
+
+LANGUAGE: markdown
+CODE:
+```
+Unlike a [JSON API](@/essays/hypermedia-apis-vs-data-apis.md), the hypermedia API you produce for your hypermedia-driven
+application _should_ feature end-points specialized for your particular application's UI needs.  
+
+Because hypermedia APIs are [not designed to be consumed by general-purpose clients](@/essays/hypermedia-clients.md) you 
+can set aside the pressure to keep them generalized and produce the content specifically needed for your application.  
+Your end-points should be optimized to support your particular applications UI/UX needs, not for a general-purpose 
+data-access model for your domain model.
+```
+
+----------------------------------------
+
+TITLE: CSS Styling Example
+DESCRIPTION: Demonstrates a basic CSS rule for setting the background color of content elements. This snippet shows how to apply styles directly within the content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/hxboost_partial_template_parsing/other-content.html#_snippet_0
+
+LANGUAGE: css
+CODE:
+```
+body {
+  background: lightgreen;
+}
+```
+
+----------------------------------------
+
+TITLE: HTMX Form Submission Example
+DESCRIPTION: This example shows how to submit a form using HTMX. The `hx-post` attribute specifies the URL for the POST request, and `hx-target` defines where the server's response will be displayed. `hx-swap` controls how the response updates the target element.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/_index.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<form hx-post="/submit-form" hx-target="#response">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name">
+  <button type="submit">Submit</button>
+</form>
+
+<div id="response"></div>
+```
+
+----------------------------------------
+
+TITLE: Alpine.js Integration Example
+DESCRIPTION: Shows a simple use case for Alpine.js, managing component state and interactivity directly within HTML.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/spa-alternative.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<div x-data="{ open: false }">
+  <button @click="open = !open">Toggle</button>
+  <div x-show="open">
+    Content goes here
+  </div>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Install htmx Preload Extension via npm
+DESCRIPTION: Shows how to install the htmx preload extension using npm for projects that utilize module bundlers like Webpack or Rollup. It includes instructions for both installation and importing the extension.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/preload.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-preload
+```
+
+----------------------------------------
+
+TITLE: HTMX Button Example
+DESCRIPTION: A basic HTMX button that posts to a server and targets an output element. This serves as the trigger for the async authentication flow.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/async-auth.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/example" hx-target="next output">
+    An htmx-Powered button
+  </button>
+  <output>
+    --
+  </output>
+```
+
+----------------------------------------
+
+TITLE: htmx Swap Options Example
+DESCRIPTION: Demonstrates the use of swap modifiers with the hx-swap attribute. This example shows how to ignore the title from new content during a swap.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_25
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
+```
+
+----------------------------------------
+
+TITLE: Navigation Link Example
+DESCRIPTION: A simple HTML markdown link to navigate to another page within the project.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/history_safari_ios_bug/index.html#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+[Go To Page 2](page2.html)
+```
+
+----------------------------------------
+
+TITLE: Mock Server Responses for Content Swapping
+DESCRIPTION: Sets up mock server responses for '/new-content' and '/original-content' to demonstrate swapping content within a div using HTMX, including transition effects.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/scratch/scratch.html#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+var originalContent = htmx.find(".slide-it").innerHTML;
+this.server.respondWith("GET", "/new-content", function(xhr){
+  xhr.respond(200, {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+});
+this.server.respondWith("GET", "/original-content", function(xhr){
+  xhr.respond(200, {}, originalContent)
+});
+```
+
+----------------------------------------
+
+TITLE: HTMX Equivalents for IntercoolerJS Request Methods
+DESCRIPTION: Maps IntercoolerJS request attributes like `ic-post-to`, `ic-put-to`, and `ic-patch-to` to their corresponding HTMX attributes (`hx-post`, `hx-put`, `hx-patch`). It also notes that `ic-push-params` is handled automatically by HTMX for GET requests.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_18
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-post-to -->
+<button hx-post="/submit" hx-vals='{"name":"John Doe"}'>Submit</button>
+
+<!-- Equivalent to ic-put-to -->
+<button hx-put="/update/1">Update</button>
+
+<!-- Equivalent to ic-patch-to -->
+<button hx-patch="/patch/1">Patch</button>
+
+<!-- ic-push-params is automatic for GET requests -->
+<div hx-get="/search" hx-params="name,age">Search</div>
+```
+
+----------------------------------------
+
+TITLE: HTMX Scroll Event Handler Setup
+DESCRIPTION: Sets up a server for testing HTMX scroll event handlers. It configures the server to automatically respond and defines a specific response for GET requests to '/more_content'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/intersect-test-eventHandler.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+```
+
+----------------------------------------
+
+TITLE: Install Idiomorph via npm
+DESCRIPTION: Installs the idiomorph package using npm. This is suitable for projects using module bundlers.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/idiomorph.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install idiomorph
+
+```
+
+----------------------------------------
+
+TITLE: HTMX Scroll Event Handler Setup
+DESCRIPTION: Sets up a server for testing HTMX scroll event handlers. It configures the server to automatically respond and defines a specific response for GET requests to '/more_content'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/intersect-test-eventHandler.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+```
+
+----------------------------------------
+
+TITLE: Install htmx-1-compat via npm
+DESCRIPTION: This snippet demonstrates how to install the htmx-1-compat extension using npm, a package manager for Node.js. It's suitable for projects using module bundlers.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/htmx-1-compat.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-htmx-1-compat
+```
+
+----------------------------------------
+
+TITLE: htmx WebSocket Example
+DESCRIPTION: Demonstrates how to establish a WebSocket connection and send messages using the hx-ws attribute in htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2020-5-24-htmx-0.0.4-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-ws="connect wss:/chatroom">
+    <div id="chat_room">
+      ...
+    </div>
+    <form hx-ws="send">
+        <input name="chat_message">
+    </form>
+  </div>
+```
+
+----------------------------------------
+
+TITLE: Out-of-Band Swap with hx-select-oob
+DESCRIPTION: This example demonstrates how to use hx-select-oob to perform an out-of-band swap. A GET request is made, and a specific element from the response ('#info-details') replaces the button, while another element ('#alert') is swapped into a separate div with the same ID.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-select-oob.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div>
+   <div id="alert"></div>
+    <button hx-get="/info" 
+            hx-select="#info-details" 
+            hx-swap="outerHTML"
+            hx-select-oob="#alert">
+        Get Info!
+    </button>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Simulate CI Test Run
+DESCRIPTION: Locally simulates the outcome of a CI test run, useful for catching issues before pushing to GitHub.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_8
+
+LANGUAGE: bash
+CODE:
+```
+npm run test:ci
+```
+
+----------------------------------------
+
+TITLE: Vendor-First Dependency Managers
+DESCRIPTION: This section introduces vendor-first dependency managers, highlighting examples like 'vend' for Common Lisp and Go's vendoring option, and discusses potential enhancements for managing transitive dependencies, updates, and local modifications.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/vendoring.md#_snippet_11
+
+LANGUAGE: English
+CODE:
+```
+vend: https://github.com/fosskers/vend
+go's vendoring option: https://go.dev/ref/mod#vendoring
+vendorpull: https://github.com/sourcemeta/vendorpull
+git-vendor: https://github.com/brettlangdon/git-vendor
+```
+
+----------------------------------------
+
+TITLE: Real World htmx Experiences Essays
+DESCRIPTION: Case studies and real-world examples of migrating from other frameworks to htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/_index.md#_snippet_2
+
+LANGUAGE: markdown
+CODE:
+```
+### Real World htmx Experiences
+* [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
+* [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
+* [A Real World wasm to htmx Port](@/essays/a-real-world-wasm-to-htmx-port.md)
+* [Next.js to htmx — A Real World Example](@/essays/a-real-world-nextjs-to-htmx-port.md)
+* [You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths](@/essays/you-cant.md)
+```
+
+----------------------------------------
+
+TITLE: htmx Server Setup and Response
+DESCRIPTION: Demonstrates setting up a test server with htmx and defining custom responses for specific HTTP requests. This is useful for testing client-side interactions.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/scroll-test-startEnd.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+var server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: HTMX Class-Tools Extension Example
+DESCRIPTION: Demonstrates the use of the HTMX class-tools extension to toggle CSS classes with transitions. This example toggles the opacity of a div.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/animations.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+<style>
+.demo.faded {
+  opacity:.3;
+}
+.demo {
+  opacity:1;
+  transition: opacity ease-in 900ms;
+}
+</style>
+<div class="demo" classes="toggle faded:1s">Toggle Demo</div>
+```
+
+----------------------------------------
+
+TITLE: JSX Component Example
+DESCRIPTION: Illustrates a React JSX component for a button, contrasting with inline scripting. This example emphasizes JavaScript as the primary technology with HTML embedded for UI description, highlighting a different approach to behavior localization.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-friendly-scripting.md#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+class Button extends React.Component {
+    constructor(props) {
+        // ...
+    }
+    toggleVisibilityOnNextSection() {
+        // ...
+    }
+    render() {
+        return <button onClick={this.toggleVisibilityOnNextSection}>{this.props.text}</button>;
+    }
+}
+```
+
+----------------------------------------
+
+TITLE: HTMX Server Setup for Scroll Behavior Test
+DESCRIPTION: Sets up a mock server for testing HTMX scroll behavior. It configures the server to automatically respond to requests and defines a specific response for GET requests to '/more_divs'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/poll-clears-on-reinit-test.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: GraphQL API Interaction (Conceptual)
+DESCRIPTION: While direct data store access is preferred with server-rendered HTML, GraphQL can be an alternative for SPAs, though it introduces potential security considerations.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_7
+
+LANGUAGE: graphql
+CODE:
+```
+query GetUserData($userId: ID!) {
+  user(id: $userId) {
+    name
+    email
+  }
+}
+```
+
+----------------------------------------
+
+TITLE: Basic htmx Button Example
+DESCRIPTION: Demonstrates a basic htmx button that triggers an HTTP POST request and updates a target element with the response.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/clicked"
+    hx-trigger="click"
+    hx-target="#parent-div"
+    hx-swap="outerHTML">
+    Click Me!
+</button>
+```
+
+----------------------------------------
+
+TITLE: Run All Tests Headless
+DESCRIPTION: Executes all tests in headless mode using Chrome.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+npm test
+```
+
+----------------------------------------
+
+TITLE: Image Example
+DESCRIPTION: Displays an image related to the difficulty of creating hypermedia clients. The image is centered and has a maximum width of 95%.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-clients.md#_snippet_3
+
+LANGUAGE: html
+CODE:
+```
+<div style="text-align:center;padding-top: 24px">
+
+<img src="/img/creating-client.png" alt="Creating A Hypermedia Client Is Hard Joke" style="max-width: 95%">
+
+</div>
+```
+
+----------------------------------------
+
+TITLE: Hypermedia-Oriented Application API Example
+DESCRIPTION: Demonstrates how an application API can return HTML fragments using htmx, allowing for dynamic updates without complex JSON parsing on the client. This approach aligns with hypermedia principles for simpler, more flexible UIs.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/splitting-your-apis.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div id="content">
+  <!-- Content updated via htmx -->
+</div>
+
+<button hx-post="/clicked" hx-target="#content">Click Me</button>
+```
+
+----------------------------------------
+
+TITLE: Install htmx Head Support Extension via npm
+DESCRIPTION: Installs the head-support extension using npm, suitable for projects with build systems. It also shows how to import both htmx and the extension in a JavaScript entry point.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/head-support.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-head-support
+```
+
+LANGUAGE: js
+CODE:
+```
+import `htmx.org`;
+import `htmx-ext-head-support`;
+```
+
+----------------------------------------
+
+TITLE: Reset Individual Input with hx-on::after-request
+DESCRIPTION: This example demonstrates resetting a single input field after a successful request. It uses `hx-on::after-request` to trigger JavaScript. If the request is successful, it gets the input element by its ID and sets its value to an empty string.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/reset-user-input.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<div>
+    <label>Add a note</label>
+    <input id="note-input" type="text" name="note-text" placeholder="blank canvas">
+</div>
+<button class="btn primary"
+        hx-post="/note"
+        hx-target="#note"
+        hx-swap="afterbegin"
+        hx-include="#note-input"
+        hx-on::after-request="if(event.detail.successful)
+            document.getElementById('note-input').value = ''">
+    Add
+</button>
+<ul id="notes"><!-- Response will go here --></ul>
+```
+
+----------------------------------------
+
+TITLE: htmx Path Dependencies
+DESCRIPTION: Explains how to use `hx-trigger` with `path-deps` to replicate Intercooler's `ic-deps`, requiring the `path-deps` extension.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-deps -->
+<div hx-trigger="path-deps" path-deps="/foo/bar">...</div>
+```
+
+----------------------------------------
+
+TITLE: htmx Extensions Overview
+DESCRIPTION: Demonstrates how htmx extensions can provide functionality not present in the core library, such as dependency management similar to Intercooler.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<p>htmx extensions allow for custom functionality. For example, the dependencies mechanism baked into Intercooler is available via <a href="https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md">an extension</a>.</p>
+<p>Other extensions enable new behaviors, like the <a href="https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md"><code>preload</code> extension</a>.</p>
+```
+
+----------------------------------------
+
+TITLE: Install htmx Web Socket Extension via npm
+DESCRIPTION: Installs the htmx Web Socket extension using npm for use in project builds.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/ws.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-ws
+```
+
+----------------------------------------
+
+TITLE: Server Response Testing
+DESCRIPTION: Sets up a test server to automatically respond to requests. It defines responses for GET requests to '/prompt' and '/confirm', simulating server-side interactions.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/confirm-and-prompt.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/prompt", function(xhr){
+  xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["HX-Prompt"]);
+})
+server.respondWith("GET", "/confirm", function(xhr){
+  xhr.respond(200, {}, "Confirmed")
+})
+```
+
+----------------------------------------
+
+TITLE: Mock Server Responses for Content Swapping
+DESCRIPTION: Sets up mock server responses for '/new-content' and '/original-content' to demonstrate swapping content within a div using HTMX, including transition effects.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/scratch/scratch.html#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+var originalContent = htmx.find(".slide-it").innerHTML;
+this.server.respondWith("GET", "/new-content", function(xhr){
+  xhr.respond(200, {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+});
+this.server.respondWith("GET", "/original-content", function(xhr){
+  xhr.respond(200, {}, originalContent)
+});
+```
+
+----------------------------------------
+
+TITLE: Redis's kvstoreScan() Function
+DESCRIPTION: An example of a function (around 40 LOC) from the Redis key-value store implementation. While smaller than the previous examples, it's still larger than what 'Clean Code' principles might suggest for function size.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/codin-dirty.md#_snippet_3
+
+LANGUAGE: c
+CODE:
+```
+/* Example from Redis kvstore.c */
+void kvstoreScan(RedisClient *c, void **argv, int argc) {
+    /* ... implementation details ... */
+}
+```
+
+----------------------------------------
+
+TITLE: Install htmx Response Targets Extension via npm
+DESCRIPTION: This demonstrates how to install the response-targets extension using npm, a common package manager for JavaScript projects. It's suitable for projects using module bundlers.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/response-targets.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-response-targets
+```
+
+----------------------------------------
+
+TITLE: htmx Data Attribute Prefix Example
+DESCRIPTION: Shows how to use the 'data-' prefix for htmx attributes as an alternative to the 'hx-' prefix.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<a data-hx-post="/click">Click Me!</a>
+```
+
+----------------------------------------
+
+TITLE: Bootstrap-like Progress Bar Styling
+DESCRIPTION: CSS styles for the progress bar component, mimicking Bootstrap's styling for appearance and transitions.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_3
+
+LANGUAGE: css
+CODE:
+```
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+.progress-bar {
+    float: left;
+    width: 0%;
+    height: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    text-align: center;
+    background-color: #337ab7;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    -webkit-transition: width .6s ease;
+    -o-transition: width .6s ease;
+    transition: width .6s ease;
+}
+```
+
+----------------------------------------
+
+TITLE: Install htmx via CDN (unminified)
+DESCRIPTION: Provides the script tag to include the unminified version of htmx from a CDN, useful for debugging or development.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_3
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js" integrity="sha384-ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv" crossorigin="anonymous"></script>
+```
+
+----------------------------------------
+
+TITLE: htmx Server Setup and Response
+DESCRIPTION: Demonstrates setting up a test server with htmx and defining custom responses for specific HTTP requests. This is useful for testing client-side interactions.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/scroll-test-startEnd.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+var server = makeServer();
+server.autoRespond = true;
+server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+```
+
+----------------------------------------
+
+TITLE: HTMX View Transitions API Integration
+DESCRIPTION: Shows how to use HTMX with the View Transitions API for animated content swaps. This example implements a slide-in/slide-out animation for content updates.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/animations.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+```
+<style>
+   @keyframes fade-in {
+     from { opacity: 0; }
+   }
+
+   @keyframes fade-out {
+     to { opacity: 0; }
+   }
+
+   @keyframes slide-from-right {
+     from { transform: translateX(90px); }
+   }
+
+   @keyframes slide-to-left {
+     to { transform: translateX(-90px); }
+   }
+
+   .slide-it {
+     view-transition-name: slide-it;
+   }
+
+   ::view-transition-old(slide-it) {
+     animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+   }
+   ::view-transition-new(slide-it) {
+     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+   }
+</style>
+
+
+<div class="slide-it">
+   <h1>Initial Content</h1>
+   <button class="btn primary" hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+     Swap It!
+   </button>
+</div>
+```
+
+----------------------------------------
+
+TITLE: HTMX Extensions API Example
+DESCRIPTION: This snippet highlights the use of the HTMX extensions API for delivering new functionality, referencing the experimental `moveBefore()` API as an example of how new browser features are integrated.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/future.md#_snippet_1
+
+LANGUAGE: javascript
+CODE:
+```
+// Example of using an experimental API via extensions
+// (Conceptual - actual implementation would be in an extension file)
+
+// Assume 'htmx' object is available globally or imported
+// htmx.defineExtension('move-before', {
+//   // ... extension logic using moveBefore() ...
+// });
+
+// Usage in HTML:
+// <div hx-get="/some-path" hx-trigger="click" hx-ext="move-before">...</div>
+```
+
+----------------------------------------
+
+TITLE: Example JSON Response for Account Data
+DESCRIPTION: This JSON structure represents an account with its number, balance, status, and associated action links. It serves as an example of a data-centric API response that lacks explicit presentation information.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-clients.md#_snippet_2
+
+LANGUAGE: json
+CODE:
+```
+{
+  "account": {
+    "account_number": 12345,
+    "balance": {
+      "currency": "usd",
+      "value": 50.00
+    },
+    "status": "open",
+    "links": {
+      "deposits": "/accounts/12345/deposits",
+      "withdrawals": "/accounts/12345/withdrawals",
+      "transfers": "/accounts/12345/transfers",
+      "close-requests": "/accounts/12345/close-requests"
+    }
+  }
+}
+```
+
+----------------------------------------
+
+TITLE: Standard HTML onclick Attribute
+DESCRIPTION: An example of the standard HTML onclick attribute for comparison with hx-on.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_75
+
+LANGUAGE: html
+CODE:
+```
+<button onclick="alert('You clicked me!')">
+    Click Me!
+</button>
+```
+
+----------------------------------------
+
+TITLE: Second Page Cache Buster
+DESCRIPTION: This snippet demonstrates cache busting for the second page link, including a case with an existing query parameter.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/cache-buster/index.html#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<a href="second.html">Second</a>
+<a href="second.html?foo=bar">Second W/ Param</a>
+```
+
+----------------------------------------
+
+TITLE: Google Homepage Source Code Comparison (2000 vs. 2023)
+DESCRIPTION: Illustrates the significant increase in complexity and obfuscation of web page source code over time, highlighting the decline of the 'View Source' affordance. The 2000 example shows simpler HTML, while the 2023 example represents a much larger and more complex JavaScript-driven structure.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/right-click-view-source.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<!-- Google Homepage Source Code in 2000 -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Search</title>
+</head>
+<body>
+    <center>
+        <img src="googlelogo.png" alt="Google">
+        <form action="/search">
+            <input type="text" name="q">
+            <input type="submit" value="Google Search">
+        </form>
+    </center>
+</body>
+</html>
+```
+
+LANGUAGE: javascript
+CODE:
+```
+// Snippet representing a small fraction of Google's 2023 homepage source code
+// This is highly simplified and illustrative of the complexity increase.
+(function() {
+    var root = document.getElementById('root');
+    var appState = {
+        query: '',
+        results: [],
+        // ... many more complex states and configurations
+    };
+
+    function renderApp(state) {
+        // Complex rendering logic using virtual DOM or similar techniques
+        console.log('Rendering app with state:', state);
+        // ... DOM manipulation code ...
+    }
+
+    function handleInputChange(event) {
+        appState.query = event.target.value;
+        // Debounce or throttle search requests
+        // Fetch results and update state
+        renderApp(appState);
+    }
+
+    // Event listener setup
+    var searchInput = document.querySelector('input[type="text"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleInputChange);
+    }
+
+    // Initial render
+    renderApp(appState);
+})();
+
+```
+
+----------------------------------------
+
+TITLE: Stimulus.js Integration Example
+DESCRIPTION: Illustrates how Stimulus.js can be used to add behavior to HTML elements, often in conjunction with other frontend tools.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/spa-alternative.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<div data-controller="hello">
+  <input type="text" data-action="input->hello#greet"/>
+  <p data-hello-target="output"></p>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Install htmx SSE Extension via npm
+DESCRIPTION: Installs the htmx SSE extension using npm. This is suitable for projects using module bundlers like Webpack or Rollup.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/sse.md#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+npm install htmx-ext-sse
+
+```
+
+----------------------------------------
+
+TITLE: Conditional CSS based on User Input
+DESCRIPTION: Shows a Nunjucks template example for applying CSS styles based on user-defined preferences. It demonstrates a safe way to handle user input for styling by limiting choices and using conditional logic.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/web-security-basics-with-htmx.md#_snippet_9
+
+LANGUAGE: css
+CODE:
+```
+{% if user.favorite_color === 'red' %}
+  h1 { color: 'red'; }
+{% else %}
+  h1 { color: 'blue'; }
+{% endif %}
+```
+
+----------------------------------------
+
+TITLE: Workbox Configuration for Offline Scenarios
+DESCRIPTION: Demonstrates Workbox configuration for handling offline requests, including background sync for retrying failed requests and an offline catch handler for dynamic responses.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_7
+
+LANGUAGE: javascript
+CODE:
+```
+// Example configuration for background sync and offline catch handler
+// This is a conceptual representation based on the description.
+```
+
+----------------------------------------
+
+TITLE: HTMX Server-Sent Events (SSE) Example
+DESCRIPTION: This example demonstrates how to connect to a Server-Sent Events stream using HTMX. The `sse-connect` attribute points to the SSE endpoint. Incoming events will update the content of the `events` div.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/_index.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+<div sse-connect="/events" sse-target="#events">
+  <p>Server Events:</p>
+  <div id="events"></div>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Run All Tests on Specific Browsers Headless
+DESCRIPTION: Executes all tests headlessly against a specific browser.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_3
+
+LANGUAGE: bash
+CODE:
+```
+npm run test:chrome
+npm run test:firefox
+npm run test:webkit
+```
+
+----------------------------------------
+
+TITLE: htmx Include Attribute
+DESCRIPTION: Demonstrates how `hx-include` in htmx can be used for functionality similar to Intercooler's `ic-global-include`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_10
+
+LANGUAGE: html
+CODE:
+```
+<!-- Similar to ic-global-include -->
+<div hx-get="/submit" hx-include="#my-form">Submit Form</div>
+```
+
+----------------------------------------
+
+TITLE: Active Search Pattern
+DESCRIPTION: Demonstrates the 'Active Search' box pattern, where search results update in real-time as the user types. This provides immediate feedback and a more interactive search experience.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+```
+<input type="search" name="q" placeholder="Search..."
+       hx-get="/search" 
+       hx-trigger="input changed delay:250ms" 
+       hx-target="#results">
+<div id="results"></div>
+```
+
+----------------------------------------
+
+TITLE: HTMX Search Input Example
+DESCRIPTION: An example of an input element enhanced with HTMX and Hyperscript for filtering a table. It dynamically hides rows that do not match the search query.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/_index.md#_snippet_17
+
+LANGUAGE: html
+CODE:
+```
+<search aria-label="Community extensions">
+  <label for="extension-filter" hidden>Search Extensions:</label>
+  <input type="search" id="extension-filter" placeholder="Search Extensions..."
+       _="init
+            set :table to the next <table/>
+            set :initialHeight to *computed-height of :table
+          on keyup
+            if the event's key is 'Escape' then set my value to '' then trigger input end
+          on input
+            repeat in closest <tr/> to <td:first-of-type/> in :table
+              if its textContent.toLowerCase() contains my value.toLowerCase()
+                remove @hidden from it
+              else
+                add @hidden='' to it
+              end
+            end
+            -- hide section header when its section is empty
+            show closest <tr/> to <tbody th/> in :table
+                 when (the next <tr:not([hidden])/> from it within the closest <tbody/> to it) exists
+            -- avoid shift by keeping page size constant
+            set *margin-bottom of :table to
+                `calc(${:initialHeight} - ${*computed-height of :table})`">
+</search>
+```
+
+----------------------------------------
+
+TITLE: Second Page Cache Buster
+DESCRIPTION: This snippet demonstrates cache busting for the second page link, including a case with an existing query parameter.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/cache-buster/index.html#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<a href="second.html">Second</a>
+<a href="second.html?foo=bar">Second W/ Param</a>
+```
+
+----------------------------------------
+
+TITLE: Tabs (Using HATEOAS)
+DESCRIPTION: Demonstrates how to display and select tabs using HATEOAS principles with htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_19
+
+LANGUAGE: html
+CODE:
+```
+<!-- Example content for tabs-hateoas.md -->
+<div id="tab-container">
+  <button hx-get="/tabs/tab1" hx-target="#tab-content" hx-swap="innerHTML">Tab 1</button>
+  <button hx-get="/tabs/tab2" hx-target="#tab-content" hx-swap="innerHTML">Tab 2</button>
+</div>
+<div id="tab-content">
+  <!-- Tab content will be loaded here -->
+</div>
+```
+
+----------------------------------------
+
+TITLE: hx-swap Extended Syntax
+DESCRIPTION: Demonstrates the extended syntax for hx-swap's 'scroll' and 'show' options, including the 'window:top' and 'window:bottom' pseudo-selectors for precise element targeting.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2021-7-12-htmx-1.5.0-is-released.md#_snippet_3
+
+LANGUAGE: html
+CODE:
+```
+<div hx-get="/content" hx-swap="scroll:window:top">Scroll to top</div>
+<div hx-get="/modal" hx-swap="show:window:bottom">Show at bottom</div>
+```
+
+----------------------------------------
+
+TITLE: Python Django Render Block Extension Example
+DESCRIPTION: Provides an example of using the django-render-block extension to render specific blocks within Django templates, often used in conjunction with HTMX for partial page updates.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/template-fragments.md#_snippet_8
+
+LANGUAGE: python
+CODE:
+```
+# See example code for htmx: https://github.com/spookylukey/django-htmx-patterns/blob/master/inline_partials.rst
+```
+
+----------------------------------------
+
+TITLE: Content Security Policy (CSP) Header Example
+DESCRIPTION: Illustrates a basic Content Security Policy header that restricts script sources to a specific domain, enhancing security by limiting executable content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/web-security-basics-with-htmx.md#_snippet_11
+
+LANGUAGE: http
+CODE:
+```
+Content-Security-Policy: script-src 'self' https://trusted.cdn.com;
+```
+
+----------------------------------------
+
+TITLE: Include Form Values in GET Request
+DESCRIPTION: Illustrates how to use the hx-include attribute with 'closest form' to ensure form values are sent with a GET request, which is not the default behavior.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/QUIRKS.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+<button hx-get="/search"
+        hx-include="closest form">
+  Search
+</button>
+```
+
+----------------------------------------
+
+TITLE: Install htmx 2.0.0-alpha1 via CDN
+DESCRIPTION: This snippet shows how to include the htmx 2.0.0-alpha1 library in an HTML document using a CDN link.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2024-01-26-htmx-2.0.0-alpha1-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://unpkg.com/htmx.org@2.0.0-alpha1/dist/htmx.min.js"></script>
+```
+
+----------------------------------------
+
+TITLE: JSON Data API Example
+DESCRIPTION: Demonstrates a typical JSON response from a bank account API endpoint. This illustrates application-level decoupling where the API serves as a hard interface for various clients.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/two-approaches-to-decoupling.md#_snippet_0
+
+LANGUAGE: json
+CODE:
+```
+HTTP/1.1 200 OK
+
+{
+    "account": {
+        "account_number": 12345,
+        "balance": {
+            "currency": "usd",
+            "value": -50.00
+        },
+        "status": "overdrawn"
+    }
+}
+```
+
+----------------------------------------
+
+TITLE: Content Security Policy (CSP) Example
+DESCRIPTION: A Content Security Policy (CSP) can be implemented using a meta tag to restrict the sources from which content can be loaded, enhancing security.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_87
+
+LANGUAGE: html
+CODE:
+```
+<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+```
+
+----------------------------------------
+
+TITLE: htmx Installation via CDN
+DESCRIPTION: This snippet shows how to include the htmx 2.0.0 library in an HTML document using a CDN link.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2024-06-17-htmx-2.0.0-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
+```
+
+----------------------------------------
+
+TITLE: Run Specific Test File Headlessly
+DESCRIPTION: Executes a particular test file, such as `test/core/ajax.js`, in headless mode.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_4
+
+LANGUAGE: bash
+CODE:
+```
+npm test test/core/ajax.js
+```
+
+----------------------------------------
+
+TITLE: Initialize Third-Party Library with htmx.onLoad
+DESCRIPTION: Presents a convenient helper function `htmx.onLoad` for initializing third-party libraries when HTMX loads content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_65
+
+LANGUAGE: JS
+CODE:
+```
+htmx.onLoad(function(target) {
+    myJavascriptLib.init(target);
+});
+```
+
+----------------------------------------
+
+TITLE: HTMX Meta Option Example
+DESCRIPTION: Demonstrates the use of the `includeIndicatorStyles` meta option in HTMX to control CSS inclusion for indicators. This example shows how to disable default indicator styling.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/no-indicator-css.html#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<meta name='htmx-config' content='{"includeIndicatorStyles":false}'>
+
+<!-- Content that will display indicators -->
+<div id="content">
+  <button hx-get="/trigger-indicator" hx-indicator="#loading-indicator">Load Data</button>
+  <span id="loading-indicator" class="htmx-indicator">Loading...</span>
+</div>
+
+<!-- Example server response (not shown) -->
+
+```
+
+----------------------------------------
+
+TITLE: Generate Workbox Configuration
+DESCRIPTION: Initiates the Workbox wizard to create a configuration file (`workbox-config.js`) for customizing service worker behavior.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_3
+
+LANGUAGE: bash
+CODE:
+```
+workbox wizard
+```
+
+----------------------------------------
+
+TITLE: HTMX Meta Option Example
+DESCRIPTION: Demonstrates the use of the `includeIndicatorStyles` meta option in HTMX to control CSS inclusion for indicators. This example shows how to disable default indicator styling.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/no-indicator-css.html#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<meta name='htmx-config' content='{"includeIndicatorStyles":false}'>
+
+<!-- Content that will display indicators -->
+<div id="content">
+  <button hx-get="/trigger-indicator" hx-indicator="#loading-indicator">Load Data</button>
+  <span id="loading-indicator" class="htmx-indicator">Loading...</span>
+</div>
+
+<!-- Example server response (not shown) -->
+
+```
+
+----------------------------------------
+
+TITLE: Define htmx Extension
+DESCRIPTION: Demonstrates how to define a new htmx extension named 'my-ext' using the `htmx.defineExtension()` function. This example includes an `onEvent` handler that logs fired events to the console.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/building.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<script>
+  htmx.defineExtension('my-ext', {
+    onEvent : function(name, evt) {
+        console.log("Fired event: " + name, evt);
+    }
+  })
+</script>
+```
+
+----------------------------------------
+
+TITLE: Basic hx-include Example
+DESCRIPTION: Demonstrates using hx-include with a CSS selector to target an input element by its name attribute for an AJAX POST request.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-include.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div>
+    <button hx-post="/register" hx-include="[name='email']">
+        Register!
+    </button>
+    Enter email: <input name="email" type="email"/>
+</div>
+```
+
+----------------------------------------
+
+TITLE: htmx Examples: Edit Row
+DESCRIPTION: Illustrates a common server-side application pattern for editing rows within a list view using htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/when-to-use-hypermedia.md#_snippet_2
+
+LANGUAGE: markdown
+CODE:
+```
+This example demonstrates the edit-row pattern, a common approach in server-side applications for managing data updates within list views using htmx.
+```
+
+----------------------------------------
+
+TITLE: Speculation Rules API Configuration
+DESCRIPTION: An example of how to configure the Speculation Rules API using a JavaScript object to define which links should be prefetched or prerendered for faster navigation.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_6
+
+LANGUAGE: javascript
+CODE:
+```
+{
+  "prefetch": [
+    {
+      "source": "document",
+      "where": {
+        "href_starts_with": "/"
+      },
+      "links": {
+        "href_starts_with": "/"
+      }
+    }
+  ],
+  "prerender": [
+    {
+      "source": "document",
+      "where": {
+        "href_starts_with": "/"
+      },
+      "prerender": {
+        "href_starts_with": "/"
+      }
+    }
+  ]
+}
+```
+
+----------------------------------------
+
+TITLE: Hypermedia As The Engine Of Application State (HATEOAS)
+DESCRIPTION: This snippet explains the concept of Hypermedia As The Engine Of Application State (HATEOAS) in the context of hypermedia-based APIs. It highlights the ability to refactor API shapes over time without versioning or documentation, adapting to new needs.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/10-tips-for-SSR-HDA-apps.md#_snippet_3
+
+LANGUAGE: markdown
+CODE:
+```
+A related tip is that, when you have a hypermedia-based API, you can aggressively refactor your API in a way that is
+heavily discouraged when writing JSON API-based SPAs.  Because hypermedia-based applications use [Hypermedia As The Engine 
+Of Application State](@/essays/hateoas.md), you are able and, in fact, encouraged, to change the shape of them as your
+application developers and as use cases change.
+
+A great strength of the hypermedia approach is that you can completely rework your API to adapt to new needs over time
+without needing to version the API or even document it.
+```
+
+----------------------------------------
+
+TITLE: Basic hx-on:click Example
+DESCRIPTION: Demonstrates the basic usage of the hx-on attribute to handle a click event with an inline JavaScript alert.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-on.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-on:click="alert('Clicked!')">Click</div>
+```
+
+----------------------------------------
+
+TITLE: Hyperscript for Pre-Request Actions
+DESCRIPTION: Demonstrates using Hyperscript with htmx events like `htmx:beforeRequest` to achieve functionality similar to Intercooler's `ic-on-beforeSend` and `ic-on-beforeTrigger`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_16
+
+LANGUAGE: html
+CODE:
+```
+<!-- Similar to ic-on-beforeSend/ic-on-beforeTrigger -->
+<button _="on htmx:beforeRequest add @disabled to me">Submit</button>
+```
+
+----------------------------------------
+
+TITLE: Completed Job State with Restart
+DESCRIPTION: HTML structure representing a completed job, including a 'Complete' status, final progress, and a restart button with a fade-in effect using the class-tools extension.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+  <h3 role="status" id="pblabel" tabindex="-1" autofocus>Complete</h3>
+
+  <div
+    hx-get="/job/progress"
+    hx-trigger="none"
+    hx-target="this"
+    hx-swap="innerHTML">
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="122" aria-labelledby="pblabel">
+        <div id="pb" class="progress-bar" style="width:122%">
+      </div>
+    </div>
+  </div>
+
+  <button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
+    Restart Job
+  </button>
+</div>
+```
+
+----------------------------------------
+
+TITLE: htmx Confirmation Attribute
+DESCRIPTION: Shows the direct htmx equivalent for Intercooler's `ic-confirm` attribute.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-confirm -->
+<button hx-confirm="Are you sure you want to proceed?">Delete</button>
+```
+
+----------------------------------------
+
+TITLE: HX-Trigger Response Header Example
+DESCRIPTION: This shows the format of the HX-Trigger response header that a server would send to initiate a client-side event. This header signals HTMX to trigger the specified event, allowing for decoupled updates.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/update-other-content.md#_snippet_4
+
+LANGUAGE: txt
+CODE:
+```
+HX-Trigger:newContact
+```
+
+----------------------------------------
+
+TITLE: Run All Tests Across All Browsers Headless
+DESCRIPTION: Runs all tests across Chrome, Firefox, and WebKit in headless mode using Playwright.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_2
+
+LANGUAGE: bash
+CODE:
+```
+npm run test:all
+```
+
+----------------------------------------
+
+TITLE: Basic HTMX AJAX Request
+DESCRIPTION: An example of a button that triggers a PUT request to '/messages' when clicked, loading the response into the button itself.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+```
+<button hx-put="/messages">
+    Put To Messages
+</button>
+```
+
+----------------------------------------
+
+TITLE: Lazy Loading Pattern
+DESCRIPTION: Demonstrates the 'Lazy Loading' pattern, where content is loaded only when it becomes visible in the viewport. This improves initial page load performance.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<div hx-trigger="intersect" hx-get="/lazy-content" hx-swap="innerHTML">
+  Loading...
+</div>
+```
+
+----------------------------------------
+
+TITLE: Import HTMX Extensions in Bundler
+DESCRIPTION: Provides an example of importing HTMX core and an extension into a JavaScript file for use with bundlers like Webpack or Rollup.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_62
+
+LANGUAGE: JS
+CODE:
+```
+import `htmx.org`;
+import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension
+```
+
+----------------------------------------
+
+TITLE: Install htmx 2.0.0-alpha2 via CDN
+DESCRIPTION: This snippet shows how to include the htmx 2.0.0-alpha2 version in your HTML using a CDN link.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2024-02-09-htmx-2.0.0-alpha2-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://unpkg.com/htmx.org@2.0.0-alpha2/dist/htmx.min.js"></script>
+```
+
+----------------------------------------
+
+TITLE: Run Tests in Browser Mode
+DESCRIPTION: Opens the test runner in a browser for debugging. This uses Mocha for easier and faster debugging.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_5
+
+LANGUAGE: bash
+CODE:
+```
+xdg-open test/index.html
+```
+
+----------------------------------------
+
+TITLE: Keyboard Shortcuts
+DESCRIPTION: Demonstrates how to create keyboard shortcuts for htmx enabled elements.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_21
+
+LANGUAGE: html
+CODE:
+```
+<!-- Example content for keyboard-shortcuts.md -->
+<button hx-get="/data" hx-trigger="keyup[key=='k']" hx-target="#result">Press K</button>
+<div id="result"></div>
+```
+
+----------------------------------------
+
+TITLE: Build Service Worker with Workbox
+DESCRIPTION: Generates the service worker file (`sw.js`) based on the provided Workbox configuration file.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_4
+
+LANGUAGE: bash
+CODE:
+```
+workbox generateSW workbox-config.js
+```
+
+----------------------------------------
+
+TITLE: Job Status and Progress Bar
+DESCRIPTION: HTML structure for displaying job status and a progress bar. It reloads progress every 600ms and triggers a 'done' event upon completion.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+  <h3 role="status" id="pblabel" tabindex="-1" autofocus>Running</h3>
+
+  <div
+    hx-get="/job/progress"
+    hx-trigger="every 600ms"
+    hx-target="this"
+    hx-swap="innerHTML">
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="pblabel">
+      <div id="pb" class="progress-bar" style="width:0%">
+    </div>
+  </div>
+</div>
+```
+
+----------------------------------------
+
+TITLE: HTMX Progress Bar Enhancements
+DESCRIPTION: Additional CSS for the restart button's fade-in effect and general progress bar styling.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_4
+
+LANGUAGE: css
+CODE:
+```
+<style>
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+.progress-bar {
+    float: left;
+    width: 0%;
+    height: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    text-align: center;
+    background-color: #337ab7;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    -webkit-transition: width .6s ease;
+    -o-transition: width .6s ease;
+    transition: width .6s ease;
+}
+#restart-btn {
+  opacity:0;
+}
+#restart-btn.show {
+  opacity:1;
+  transition: opacity 100ms ease-in;
+}
+</style>
+```
+
+----------------------------------------
+
+TITLE: Run Mocha Tests
+DESCRIPTION: Executes the configured Mocha test suite. This command starts the test runner and reports the results.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/manual/manual-perf.html#_snippet_2
+
+LANGUAGE: javascript
+CODE:
+```
+mocha.run();
+```
+
+----------------------------------------
+
+TITLE: htmx hx-on Attribute Usage
+DESCRIPTION: Shows an example of the `hx-on` attribute in htmx, which allows for arbitrary script evaluation. It also mentions that this feature can be disabled via configuration.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/web-security-basics-with-htmx.md#_snippet_12
+
+LANGUAGE: html
+CODE:
+```
+<div hx-on::after-request="alert('Request Complete!')">...</div>
+```
+
+----------------------------------------
+
+TITLE: HTMX Progress Bar Template
+DESCRIPTION: Generates an HTML progress bar element that visually represents the job's completion percentage.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/progress-bar.md#_snippet_7
+
+LANGUAGE: javascript
+CODE:
+```
+function jobProgressTemplate(job) {
+      return `<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}" aria-labelledby="pblabel">
+      <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
+    </div>
+  </div>`
+    }
+```
+
+----------------------------------------
+
+TITLE: Mocha Setup and Test Suite
+DESCRIPTION: Initializes Mocha for BDD testing, sets up assertions with Chai, and defines a test suite for manual performance tests. It includes beforeEach and afterEach hooks to manage the test server and work area.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/manual-perf.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+mocha.setup('bdd');
+mocha.checkLeaks();
+should = chai.should();
+describe("Manual Perf Tests", function() {
+  beforeEach(function () {
+    this.server = makeServer();
+    clearWorkArea();
+  });
+  afterEach(function () {
+    this.server.restore();
+    clearWorkArea();
+  });
+  // ... test cases ...
+});
+mocha.run();
+```
+
+----------------------------------------
+
+TITLE: Experimental moveBefore()
+DESCRIPTION: Demonstrates the use of the experimental `moveBefore()` API for moving elements with htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_27
+
+LANGUAGE: html
+CODE:
+```
+<!-- Example content for move-before.md -->
+<div id="container">
+  <div id="item1">Item 1</div>
+  <div id="item2">Item 2</div>
+</div>
+
+<button hx-get="/move" hx-target="#item1" hx-swap="outerHTML" hx-trigger="click">
+  Move Item 1 Before Item 2
+</button>
+
+<!-- Server response for /move -->
+<!-- 
+<div id="item1" hx-swap-oob="move:item2">Item 1</div>
+-->
+```
+
+----------------------------------------
+
+TITLE: Mocha Test Setup and Execution
+DESCRIPTION: Sets up the Mocha testing environment for htmx.js, configures logging for webdriver environments, adds the version number, and runs the tests upon DOMContentLoaded.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/test/index.html#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+// Do not log all the events in headless mode (the log output is enormous)
+if (navigator.webdriver) {
+  htmx.logAll = function() { }
+}
+
+// Add the version number to the top
+document.getElementById('version-number').innerText += htmx.version
+
+mocha.setup({
+  ui: "bdd",
+  rootHooks: {
+    beforeEach(done) {
+      console.log(`${this?.currentTest?.parent?.title} - ${this?.currentTest?.title}`)
+      done()
+    },
+  }
+})
+
+mocha.checkLeaks();
+window.should = window.chai.should()
+
+document.addEventListener("DOMContentLoaded", function () {
+  mocha.run();
+})
+```
+
+----------------------------------------
+
+TITLE: htmx Variables Attribute
+DESCRIPTION: Explains how `hx-vars` in htmx can be used to facilitate functionality similar to Intercooler's `ic-local-vars`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_15
+
+LANGUAGE: html
+CODE:
+```
+<!-- Facilitates similar functionality to ic-local-vars -->
+<div hx-get="/process" hx-vars='{"myVar": "myValue"}'>Process</div>
+```
+
+----------------------------------------
+
+TITLE: When to Use Hypermedia: Text & Images
+DESCRIPTION: Discusses hypermedia as a good fit for media-oriented web applications that primarily display text and images, citing an example of a significant codebase reduction by switching to htmx for such applications.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/when-to-use-hypermedia.md#_snippet_0
+
+LANGUAGE: markdown
+CODE:
+```
+### _...If your UI is mostly text & images_
+
+In [The Mother Of All htmx Demos](@/essays/a-real-world-react-to-htmx-port.md), David Guillot of Contexte shows how replacing React with htmx lead to a 67% reduction in the total codebase, along with numerous other eye-popping results.  
+
+As much as we would like to claim that every team moving from React to htmx would experience these results, the fact is that the
+Contexte web application is *extremely amenable* to the hypermedia style.
+
+What makes Contexte so perfect for hypermedia is that it is a media-oriented web application, showing articles consisting
+of text and images for reading.  It has a sophisticated filtering mechanism and other niceties, but the crux of the
+application is displaying and categorizing articles.  This is exactly the sort of thing that hypermedia was designed to
+do, and this is why htmx and hypermedia worked so well for their application.
+```
+
+----------------------------------------
+
+TITLE: htmx Swap Append Behavior
+DESCRIPTION: Illustrates how to achieve the functionality of Intercooler's `ic-append-from` using htmx's `hx-get` and `hx-swap` with the `beforeend` value.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_4
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-append-from -->
+<div hx-get="/your-content" hx-swap="beforeend"></div>
+```
+
+----------------------------------------
+
+TITLE: HTML Button Element for jQuery AJAX Example
+DESCRIPTION: This code snippet shows the HTML button element used in conjunction with the jQuery AJAX example. It has an ID that is targeted by the jQuery code to attach the click event and trigger the AJAX request. Alone, the button's behavior is not obvious, violating the principle of Locality of Behaviour.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/locality-of-behaviour.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<button id="d1">Click Me</button>
+```
+
+----------------------------------------
+
+TITLE: Using htmx with Hyperscript
+DESCRIPTION: Illustrates how htmx can be used with hyperscript, a scripting language designed for HTML, to achieve specific behaviors.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_1
+
+LANGUAGE: javascript
+CODE:
+```
+// htmx can be used with hyperscript for enhanced functionality.
+// hyperscript is a small, open scripting language designed to be embedded in HTML.
+// Example usage would involve htmx attributes triggering hyperscript expressions.
+```
+
+----------------------------------------
+
+TITLE: htmx Indicator Attribute
+DESCRIPTION: Shows how `hx-indicator` in htmx provides similar functionality to Intercooler's `ic-global-indicator`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_11
+
+LANGUAGE: html
+CODE:
+```
+<!-- Similar to ic-global-indicator -->
+<button hx-get="/load" hx-indicator="#loading-spinner">Load</button>
+<div id="loading-spinner">Loading...</div>
+```
+
+----------------------------------------
+
+TITLE: htmx Route Initialization (JavaScript)
+DESCRIPTION: This JavaScript code initializes the routes for the demo using an `init` function (presumably provided by the `demoenv()` context, which is not fully defined here but implied). It sets up a route for `/demo` that returns a table populated with contacts. It also registers a GET route for `/contacts` which expects a page parameter and returns a partial template with the row data to append.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/infinite-scroll.md#_snippet_2
+
+LANGUAGE: javascript
+CODE:
+```
+    init("/demo", function(request, params){
+      var contacts = dataStore.contactsForPage(1)
+      return tableTemplate(contacts)
+    });
+    
+    onGet(/\/contacts.*/, function(request, params){
+      var page = parseInt(params['page']);
+      var contacts = dataStore.contactsForPage(page)
+      return rowsTemplate(page, contacts);
+    });
+```
+
+----------------------------------------
+
+TITLE: Interoperability through Semantics
+DESCRIPTION: Discusses how GraphQL can be used to build interoperable APIs by agreeing on common semantics and mutations, similar to OPDS in the library world.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/leonard_richardson.md#_snippet_6
+
+LANGUAGE: text
+CODE:
+```
+Since GraphQL is independently deployable, supports multiple server implementations and defines no domain-specific semantics, an interoperable domain-specific API could be built on top of it. Rather than exporting your data model to GraphQL and clashing with a dozen similar data models from the same industry, you could get together with your peers and agree upon a common set of semantics and mutations for your problem space. Then you'd have interoperability. It's not much different from what we did with OPDS in the library world, defining what concepts like "bookshelf" and "borrow" mean.
+```
+
+----------------------------------------
+
+TITLE: Jinja Template for Conditional Content
+DESCRIPTION: This Jinja template snippet conditionally renders content based on the 'page.path'. If the page path starts with '/examples', it renders a specific block; otherwise, it renders an empty block. This is likely used for routing or displaying example-specific content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/themes/htmx-theme/templates/base.html#_snippet_1
+
+LANGUAGE: jinja
+CODE:
+```
+{% if page and page.path is starting_with("/examples") %}
+
+{% else %}
+
+{% endif %}
+```
+
+----------------------------------------
+
+TITLE: Initial HTML Structure with Lazy Loading
+DESCRIPTION: This HTML snippet sets up a container that triggers a GET request to '/graph' on load. It displays a progress indicator image while the content is being fetched.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/lazy-load.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-get="/graph" hx-trigger="load">
+  <img alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Cross-Document View Transitions API
+DESCRIPTION: Demonstrates how to implement cross-document view transitions in MPAs using CSS and JavaScript, enabling fancy animations and transitions between pages.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/you-cant.md#_snippet_10
+
+LANGUAGE: APIDOC
+CODE:
+```
+Cross-Document View Transitions API:
+  Overview:
+    Enables animated transitions between different documents (pages) in a browser.
+    Primarily used in Multi-Page Applications (MPAs) to provide a smoother user experience.
+
+  Key Features:
+    - CSS-driven animations for transitions.
+    - JavaScript integration for controlling transition logic.
+    - Works across same-origin documents.
+
+  Usage:
+    - Navigate between pages using standard links or programmatic navigation.
+    - The browser automatically handles transitions if the API is supported and configured.
+    - Developers can customize transitions using CSS pseudo-elements and animations.
+
+  Example (Conceptual CSS):
+    ::view-transition-old(root) {
+      animation: fade-out 0.5s ease-out forwards;
+    }
+    ::view-transition-new(root) {
+      animation: fade-in 0.5s ease-in forwards;
+    }
+
+    @keyframes fade-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+  Related Documentation:
+    - [Google Chrome announcement page](https://developer.chrome.com/docs/web-platform/view-transitions)
+    - [Multi-page application demo](https://view-transitions.netlify.app/stack-navigator/mpa-prerender/)
+```
+
+----------------------------------------
+
+TITLE: Basic Click Trigger
+DESCRIPTION: Triggers an AJAX GET request to '/clicked' when the element is clicked.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-trigger.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-get="/clicked" hx-trigger="click">Click Me</div>
+```
+
+----------------------------------------
+
+TITLE: htmx Boost Attribute
+DESCRIPTION: Shows the htmx attribute that provides similar functionality to Intercooler's `ic-enhance`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-enhance -->
+<html lang="en" hx-boost="true">
+  ... 
+</html>
+```
+
+----------------------------------------
+
+TITLE: HTMX Scroll Start/End Test
+DESCRIPTION: Tests the start and end points of scroll events as handled by HTMX.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/index.html#_snippet_14
+
+LANGUAGE: html
+CODE:
+```
+<a href="/scroll-test-startEnd.html">Start/End</a>
+```
+
+----------------------------------------
+
+TITLE: The JavaScript Pressure in Web Development
+DESCRIPTION: Discusses the 'JavaScript Pressure' faced by developers when using SPA frameworks, leading to the inclination to use JavaScript on both the front-end and back-end. It outlines the advantages of this approach, such as code and data structure sharing, and expertise building.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-on-whatever-youd-like.md#_snippet_1
+
+LANGUAGE: text
+CODE:
+```
+If you decide to use an SPA framework for your web application you will, naturally, have a large front-end codebase 
+that is written in JavaScript.
+
+Given that, the following question inevitably will come up:
+
+> "Well, why aren't we doing the back-end in JavaScript too?"
+
+This is a reasonable question to ask and there are a lot of advantages to adopting the same programming language on both
+sides of the wire:
+
+* You can share application logic between the two code-bases.  A good example here is validation logic.
+* You can share data structures between the two code-bases. 
+* You can build up expertise in a single language, JavaScript, making it easier for developers to work in various parts 
+  of your application.
+* You can reuse the build system & dependency management knowledge you've acquired for the front end
+
+This _pressure_ to adopt JavaScript will only grow as your investment in the JavaScript front end ecosystem grows.
+```
+
+----------------------------------------
+
+TITLE: htmx History Element Attribute
+DESCRIPTION: Highlights the direct htmx equivalent for Intercooler's `ic-history-elt` attribute.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_12
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-history-elt -->
+<div hx-history-elt>...</div>
+```
+
+----------------------------------------
+
+TITLE: Install Idiomorph Extension via CDN
+DESCRIPTION: Includes htmx core, idiomorph, and the idiomorph extension from CDNs. The body tag enables the 'morph' extension.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/idiomorph.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js@2.0.6" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/idiomorph@0.7.3" integrity="sha384-JcorokHTL/m+D6ZHe2+yFVQopVwZ+91GxAPDyEZ6/A/OEPGEx1+MeNSe2OGvoRS9" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/idiomorph@0.7.3/dist/idiomorph-ext.min.js" integrity="sha384-szktAZju9fwY15dZ6D2FKFN4eZoltuXiHStNDJWK9+FARrxJtquql828JzikODob" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="morph">
+
+```
+
+----------------------------------------
+
+TITLE: Basic SSE Connection and Swap
+DESCRIPTION: Demonstrates a basic setup for connecting to an SSE server and swapping received messages into a div. The `sse-connect` attribute specifies the server URL, and `sse-swap` defines the event name to listen for.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/sse.md#_snippet_3
+
+LANGUAGE: html
+CODE:
+```
+<div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
+    Contents of this box will be updated in real time
+    with every SSE message received from the chatroom.
+</div>
+
+```
+
+----------------------------------------
+
+TITLE: htmx Server-Sent Events Example
+DESCRIPTION: Illustrates how to connect to a Server-Sent Events stream and receive messages using the hx-sse attribute in htmx.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2020-5-24-htmx-0.0.4-is-released.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<div hx-sse="connect /event_stream">
+    <div hx-get="/chatroom" hx-trigger="sse:chatter">
+      ...
+    </div>
+  </div>
+```
+
+----------------------------------------
+
+TITLE: Install htmx 2.0.0-beta1 via CDN
+DESCRIPTION: This snippet shows how to include the htmx 2.0.0-beta1 library in your HTML project using a CDN link. It's a common way to quickly integrate htmx into a web page.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2024-03-15-htmx-2.0.0-beta1-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<script src="https://unpkg.com/htmx.org@2.0.0-beta1/dist/htmx.min.js"></script>
+```
+
+----------------------------------------
+
+TITLE: HTMX Request Parameters vs Intercooler.js
+DESCRIPTION: Details how Intercooler.js request parameters are handled in HTMX, often through headers or extensions, as direct equivalents are frequently absent.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_25
+
+LANGUAGE: APIDOC
+CODE:
+```
+Request Parameters:
+
+- `ic-request` (Intercooler): No direct equivalent. HTMX uses the `HX-Request` header automatically.
+- `_method` (Intercooler): No direct equivalent. Use the `method-override` extension and the `X-HTTP-Method-Override` header.
+- `ic-element-id` (Intercooler): No direct equivalent.
+- `ic-element-name` (Intercooler): No direct equivalent.
+- `ic-target-id` (Intercooler): Equivalent to the `HX-Target` header.
+- `ic-trigger-id` (Intercooler): Equivalent to the `HX-Trigger` header.
+- `ic-trigger-name` (Intercooler): Equivalent to the `HX-Trigger-Name` header.
+- `ic-current-url` (Intercooler): Equivalent to the `HX-Current-URL` header.
+- `ic-prompt-value` (Intercooler): Equivalent to the `HX-Prompt` header.
+```
+
+----------------------------------------
+
+TITLE: htmx Configuration: getCacheBusterParam
+DESCRIPTION: When true, htmx appends a cache-busting parameter to GET requests, formatted as `org.htmx.cache-buster=targetElementId`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/api.md#_snippet_28
+
+LANGUAGE: APIDOC
+CODE:
+```
+htmx.config.getCacheBusterParam
+Type: boolean
+Default: false
+Description: If set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`.
+```
+
+----------------------------------------
+
+TITLE: HTMX Request Headers vs Intercooler.js Headers
+DESCRIPTION: Maps Intercooler.js request headers to their corresponding HTMX headers, showing how request information is transmitted.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_26
+
+LANGUAGE: APIDOC
+CODE:
+```
+Request Headers:
+
+- `X-IC-Request` (Intercooler): Equivalent to `HX-Request`.
+- `X-HTTP-Method-Override` (Intercooler): Equivalent to `X-HTTP-Method-Override` (used with `method-override` extension).
+```
+
+----------------------------------------
+
+TITLE: Enable htmx Extensions
+DESCRIPTION: Demonstrates how to enable the 'example' htmx extension for a div and its children. The 'hx-ext' attribute takes a comma-separated list of extension names.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-ext.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-ext="example">
+  "Example" extension is used in this part of the tree...
+  <div hx-ext="ignore:example">
+    ... but it will not be used in this part.
+  </div>
+</div>
+```
+
+----------------------------------------
+
+TITLE: Display Podcasts
+DESCRIPTION: Loads podcast data from a CSV file and lists each podcast with its title and a link. Includes a contact email for potential guests.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/templates/talk.html#_snippet_2
+
+LANGUAGE: templating
+CODE:
+```
+{% set podcasts = load_data(path="content/talk/podcasts.csv") %}
+
+[🔗](#podcasts)Podcasts
+-----------------------
+
+{% for podcast in podcasts.records %}*   [{{ podcast[0] | safe }}]({{ podcast[1] }})
+{% endfor %}
+
+[Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
+```
+
+----------------------------------------
+
+TITLE: View Code Coverage Report
+DESCRIPTION: Opens the generated code coverage report in a browser. This report is typically generated when running tests in headless Chrome.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/TESTING.md#_snippet_7
+
+LANGUAGE: bash
+CODE:
+```
+xdg-open coverage/lcov-report/index.html
+```
+
+----------------------------------------
+
+TITLE: Disable Current Element
+DESCRIPTION: This example shows how to use `hx-disabled-elt='this'` to disable the button itself during an AJAX request.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-disabled-elt.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/example" hx-disabled-elt="this">
+    Post It!
+</button>
+```
+
+----------------------------------------
+
+TITLE: Understanding The HOWL Stack
+DESCRIPTION: Explains the concept of 'The HOWL Stack' (Hypermedia On Whatever you'd Like) as a software stack that leverages hypermedia for web applications. It contrasts HOWL with other stacks like LAMP and MEAN, emphasizing the freedom to choose server-side technologies.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/hypermedia-on-whatever-youd-like.md#_snippet_0
+
+LANGUAGE: text
+CODE:
+```
+The TLDR of The HOWL Stack is this: when you use a [hypermedia-driven approach](/essays/hypermedia-driven-applications) 
+for your web application, you free yourself up to choose _whatever_ server-side technology best fits your problem and 
+your own technical tastes.
+```
+
+----------------------------------------
+
+TITLE: Install htmx SSE Extension via CDN
+DESCRIPTION: Includes the htmx core library and the SSE extension from a CDN. Ensure htmx is loaded before the extension.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/sse.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.2" integrity="sha384-Y4gc0CK6Kg+hmulDc6rZPJu0tqvk7EWlih0Oh+2OkAi1ZDlCbBDCQEE2uVk472Ky" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="sse">
+
+```
+
+----------------------------------------
+
+TITLE: Using Hyperscript for Button Disabling on Form Submission
+DESCRIPTION: Illustrates how to use hyperscript to manage button disabling and re-enabling during form submissions, providing a declarative alternative to JavaScript event listeners.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-hotwire-turbo.md#_snippet_3
+
+LANGUAGE: html
+CODE:
+```
+_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"
+```
+
+----------------------------------------
+
+TITLE: htmx Indicator Attribute Usage
+DESCRIPTION: Shows how to use the `hx-indicator` attribute in htmx, which is equivalent to Intercooler's `ic-indicator`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_14
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-indicator -->
+<button hx-get="/update" hx-indicator=".spinner">Update</button>
+<span class="spinner"></span>
+```
+
+----------------------------------------
+
+TITLE: HTMX View Transitions API - Server Responses
+DESCRIPTION: JavaScript code simulating server responses for HTMX View Transitions API examples. It defines responses for fetching new content and restoring original content.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/animations.md#_snippet_9
+
+LANGUAGE: javascript
+CODE:
+```
+var originalContent = htmx.find(".slide-it").innerHTML;
+
+this.server.respondWith("GET", "/new-content", function(xhr){
+    xhr.respond(200,  {}, "<h1>New Content</h1> <button class='btn danger' hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+});
+
+this.server.respondWith("GET", "/original-content", function(xhr){
+    xhr.respond(200,  {}, originalContent)
+});
+```
+
+----------------------------------------
+
+TITLE: htmx Configuration Options
+DESCRIPTION: Demonstrates configuration options available in htmx, including `useTemplateFragments` for parsing server content with HTML template tags and `withCredentials` for sending credentials with AJAX requests.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2021-5-25-htmx-1.4.0-is-released.md#_snippet_0
+
+LANGUAGE: javascript
+CODE:
+```
+htmx.config.useTemplateFragments = true;
+htmx.config.withCredentials = true;
+```
+
+----------------------------------------
+
+TITLE: htmx Internal API swap Method
+DESCRIPTION: Extension authors using the internal `selectAndSwap` method should now use the `swap` method, which is available in both internal and public htmx APIs. This method handles the swapping of content into a target element.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-htmx-1.md#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+let content = "<div>Hello world</div>"; // this is HTML that will be swapped into target
+let target = api.getTarget(child);
+let swapSpec = api.getSwapSpecification(child);
+api.swap(target, content, swapSpec);
+```
+
+----------------------------------------
+
+TITLE: HX-Redirect Response Header Example
+DESCRIPTION: This snippet demonstrates the usage of the HX-Redirect response header to initiate a client-side redirection to a new URL, resulting in a full page reload.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/headers/hx-redirect.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+HX-Redirect: /test
+```
+
+----------------------------------------
+
+TITLE: htmx Delete Request
+DESCRIPTION: Demonstrates the htmx attribute for making DELETE requests, replacing Intercooler's `ic-delete-from`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_6
+
+LANGUAGE: html
+CODE:
+```
+<!-- Equivalent to ic-delete-from -->
+<button hx-delete="/resource/1">Delete Item</button>
+```
+
+----------------------------------------
+
+TITLE: Using hx-on for Button Disabling on Form Submission
+DESCRIPTION: Demonstrates how to use the `hx-on` attribute to achieve the same functionality as the JavaScript event listeners for disabling and re-enabling buttons during form submissions.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-hotwire-turbo.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+hx-on:submit= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = true })'
+hx-on:htmx:afterOnLoad= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = false })'
+```
+
+----------------------------------------
+
+TITLE: Lazy Loading with htmx
+DESCRIPTION: Configures an element to load its content on initial page load and also upon form submission, effectively mimicking the lazy loading behavior of Turbo Frames.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-hotwire-turbo.md#_snippet_4
+
+LANGUAGE: html
+CODE:
+```
+hx-trigger="load, submit"
+```
+
+----------------------------------------
+
+TITLE: HTMX Response Headers vs Intercooler.js Headers
+DESCRIPTION: Compares Intercooler.js response headers with HTMX response headers, illustrating how servers can control HTMX client behavior.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_27
+
+LANGUAGE: APIDOC
+CODE:
+```
+Response Headers:
+
+- `X-IC-Trigger` (Intercooler): Equivalent to `HX-Trigger`, `HX-Trigger-After-Settle`, `HX-Trigger-After-Swap`. These headers allow servers to trigger client-side events.
+- `X-IC-Refresh` (Intercooler): Equivalent to `HX-Refresh`. Forces a refresh of the current view.
+- `X-IC-Redirect` (Intercooler): Equivalent to `HX-Redirect`. Instructs the client to navigate to a new URL.
+- `X-IC-Script` (Intercooler): No direct equivalent. Functionality may be achieved through other means.
+- `X-IC-CancelPolling` (Intercooler): No direct equivalent. Cancel polling by responding with HTTP status code `286`.
+- `X-IC-ResumePolling` (Intercooler): No direct equivalent.
+- `X-IC-SetPollInterval` (Intercooler): No direct equivalent. Control polling interval via load polling content.
+- `X-IC-Open` (Intercooler): No direct equivalent.
+- `X-IC-PushURL` (Intercooler): Equivalent to `HX-Push`. Pushes a new URL onto the history stack.
+- `X-IC-Remove` (Intercooler): No direct equivalent.
+- `X-IC-Title` (Intercooler): No direct equivalent.
+- `X-IC-Title-Encoded` (Intercooler): No direct equivalent.
+- `X-IC-Set-Local-Vars` (Intercooler): No direct equivalent.
+```
+
+----------------------------------------
+
+TITLE: Install htmx Web Socket Extension via CDN
+DESCRIPTION: Includes the htmx core library and the Web Socket extension from a CDN in the HTML head.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/extensions/ws.md#_snippet_0
+
+LANGUAGE: HTML
+CODE:
+```
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.2" integrity="sha384-vuKxTKv5TX/b3lLzDKP2U363sOAoRo5wSvzzc3LJsbaQRSBSS+3rKKHcOx5J8doU" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="ws">
+
+```
+
+----------------------------------------
+
+TITLE: Server Response for Model Options
+DESCRIPTION: This HTML snippet represents the response from the server when the '/models' endpoint is called. It provides a list of `<option>` elements for the 'Model' select, dynamically generated based on the selected 'Make'.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/value-select.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<option value='325i'>325i</option>
+<option value='325ix'>325ix</option>
+<option value='X5'>X5</option>
+```
+
+----------------------------------------
+
+TITLE: htmx Custom Headers
+DESCRIPTION: Details the change in custom request/response headers in htmx, which no longer start with the 'X-' prefix.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2020-6-20-htmx-0.0.6-is-released.md#_snippet_6
+
+LANGUAGE: APIDOC
+CODE:
+```
+htmx Custom Headers:
+  Custom request and response headers no longer start with the 'X-' prefix, aligning with current best practices.
+  Example:
+    - Instead of 'X-My-Header', use 'My-Header'.
+```
+
+----------------------------------------
+
+TITLE: Using hx-trigger for Conditional Request Firing
+DESCRIPTION: Demonstrates using `hx-trigger` with a condition based on a JavaScript function call to control when a request is initiated. Note that this may not resolve asynchronous calls.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-hotwire-turbo.md#_snippet_6
+
+LANGUAGE: html
+CODE:
+```
+hx-trigger="submit[action(target)]"
+```
+
+----------------------------------------
+
+TITLE: Ctrl Key Click Trigger
+DESCRIPTION: Triggers an AJAX GET request to '/clicked' only when the element is clicked while the Ctrl key is held down.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-trigger.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+```
+
+----------------------------------------
+
+TITLE: Hyperscript for Class Manipulation
+DESCRIPTION: Demonstrates how to use Hyperscript to add a CSS class to an element on click, replacing the functionality of Intercooler's `ic-action` and `ic-add-class`.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<button _="on click add .clicked">Add The "clicked" Class To Me</button>
+```
+
+----------------------------------------
+
+TITLE: Hypermedia Controls: Feral to Formal Paper Reference
+DESCRIPTION: References a paper discussing hypermedia controls, highlighting its relevance to lowering barriers for interoperating with remote, independent services.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/mike_amundsen.md#_snippet_4
+
+LANGUAGE: APIDOC
+CODE:
+```
+Paper: Hypermedia Controls: Feral to Formal
+Authors: [Your Name/Colleagues]
+URL: https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127
+Relevance: Discusses the hypermedia control paradigm as a method to lower the barrier of entry for using and interoperating with remote, independent services.
+```
+
+----------------------------------------
+
+TITLE: TypeScript Compilation Example
+DESCRIPTION: This snippet illustrates the concept of compiling TypeScript to JavaScript, a process htmx avoids to maintain simplicity and avoid dependency management issues.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/no-build-step.md#_snippet_1
+
+LANGUAGE: typescript
+CODE:
+```
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+// Compiled JavaScript equivalent (conceptual):
+// function greet(name) {
+//   return "Hello, " + name + "!";
+// }
+```
+
+----------------------------------------
+
+TITLE: Using hx-on for Conditional Request Firing
+DESCRIPTION: Utilizes the `hx-on` attribute to trigger a custom event ('ready') after executing a JavaScript function, which can then be used as a trigger for htmx requests.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-hotwire-turbo.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+```
+hx-on:click="event.preventDefault(); action(this); htmx.trigger(this, 'ready')"
+hx-trigger="ready"
+```
+
+----------------------------------------
+
+TITLE: htmx Test Suite Example
+DESCRIPTION: Illustrates the structure of the htmx test suite, highlighting the focus on integration tests. This snippet shows a typical JavaScript file within the test directory.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/codin-dirty.md#_snippet_5
+
+LANGUAGE: javascript
+CODE:
+```
+/*
+ * Example of a test file in htmx test suite
+ */
+
+// Setup for integration test
+// ... DOM manipulation and htmx attribute setup ...
+
+// Simulate user interaction (e.g., button click)
+// ... event triggering ...
+
+// Assertions about DOM state after interaction
+// ... checking element content, attributes, etc. ...
+
+```
+
+----------------------------------------
+
+TITLE: pjax Initialization and Usage
+DESCRIPTION: This snippet demonstrates how to initialize and use the pjax jQuery plugin. It shows how to select elements to be updated and how to trigger pjax navigation. It requires jQuery and the pjax plugin.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/interviews/chris_wanstrath.md#_snippet_3
+
+LANGUAGE: javascript
+CODE:
+```
+var pjax = new pjax({
+  elements: 'a',
+  selectors: ['#main', '#sidebar']
+});
+
+$(document).on('pjax:end', function() {
+  window.scrollTo(0, 0);
+});
+```
+
+----------------------------------------
+
+TITLE: HTMX Attribute Example
+DESCRIPTION: Demonstrates how to use HTMX attributes to trigger AJAX requests and update parts of the page directly within HTML.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/essays/is-htmx-another-javascript-framework.md#_snippet_5
+
+LANGUAGE: html
+CODE:
+```
+<button hx-post="/clicked" hx-swap="outerHTML">
+  Click Me
+</button>
+```
+
+----------------------------------------
+
+TITLE: htmx Swap None Example
+DESCRIPTION: Illustrates the 'hx-swap="none"' attribute, which prevents any DOM swap from occurring after a request.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2020-6-20-htmx-0.0.6-is-released.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+hx-swap="none"
+```
+
+----------------------------------------
+
+TITLE: Download htmx 2.0.0-beta4
+DESCRIPTION: Provides a direct download link for the htmx 2.0.0-beta4 JavaScript file, allowing users to host the library locally or use it offline.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2024-04-22-htmx-2.0.0-beta4-is-released.md#_snippet_1
+
+LANGUAGE: html
+CODE:
+```
+<a href="https://unpkg.com/htmx.org@2.0.0-beta4/dist/htmx.min.js" download>Downloaded</a>
+```
+
+----------------------------------------
+
+TITLE: Basic Kutty AJAX POST Example
+DESCRIPTION: Demonstrates a basic AJAX POST request using Kutty. When the div is clicked, it sends a POST request to '/clicked'. This is a core feature inherited from intercooler.js.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/posts/2020-5-15-kutty-0.0.1-is-released.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div kt-post="/clicked">Click Me!</div>
+```
+
+----------------------------------------
+
+TITLE: Click To Load Pattern
+DESCRIPTION: Demonstrates the 'Click To Load' pattern, where clicking a button triggers the loading of additional rows into a table. This is commonly used for pagination or infinite scrolling effects.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/examples/_index.md#_snippet_2
+
+LANGUAGE: html
+CODE:
+```
+<table class="table">
+  <tbody id="results">
+    <tr><td>Alice</td></tr>
+    <tr><td>Bob</td></tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>
+        <button hx-get="/names?page=2" hx-target="#results" hx-swap="beforeend">Load More</button>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+```
+
+----------------------------------------
+
+TITLE: htmx Meta Tag Configuration
+DESCRIPTION: This section explains how meta tags can be used to configure htmx behavior. It specifically addresses the 'use-data-prefix' and 'use-actual-http-method' configurations, comparing them to Intercooler's approach and highlighting htmx's default behaviors and extension capabilities.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/migration-guide-intercooler.md#_snippet_30
+
+LANGUAGE: APIDOC
+CODE:
+```
+Data Prefix Configuration:
+  - htmx automatically recognizes 'data-' prefixes for its attributes (e.g., data-hx-post). No meta tag is required.
+  - Example: `<a data-hx-post="/click">Click Me!</a>`
+
+HTTP Method Override Configuration:
+  - By default, htmx sends the actual HTTP method.
+  - The `method-override` extension can be used to change the verb for all non-GET requests to POST.
+  - Reference: https://github.com/bigskysoftware/htmx-extensions/blob/main/src/method-override/README.md
+```
+
+----------------------------------------
+
+TITLE: hx-patch Example
+DESCRIPTION: Demonstrates how to use the hx-patch attribute to send a PATCH request and update the DOM. The request targets '/account' and swaps the response into the body's innerHTML.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-patch.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-patch="/account" hx-target="body">
+  Patch Your Account
+</button>
+```
+
+----------------------------------------
+
+TITLE: CSS Transition Styling
+DESCRIPTION: Example CSS to enable transitions on elements that have had a class added via htmx. The key is that the element's ID remains consistent.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/docs.md#_snippet_30
+
+LANGUAGE: css
+CODE:
+```
+.red {
+    color: red;
+    transition: all ease-in 1s ;
+}
+```
+
+----------------------------------------
+
+TITLE: Basic AJAX Request with HTMX
+DESCRIPTION: Demonstrates a simple GET request to fetch HTML content and update a target element. This is a fundamental use case for HTMX.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/templates/shortcodes/markdown.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<button hx-get="/clicked" hx-target="#response" hx-swap="outerHTML">
+  Click Me
+</button>
+
+<div id="response"></div>
+```
+
+----------------------------------------
+
+TITLE: Index Page Cache Buster
+DESCRIPTION: This snippet shows how to add a cache buster to the index page link. It appends a query parameter to prevent caching.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/static/test/manual/cache-buster/index.html#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<a href="index.html?cache_buster=1">Index</a>
+```
+
+----------------------------------------
+
+TITLE: HTMX hx-swap Attribute Usage
+DESCRIPTION: Demonstrates the basic usage of the hx-swap attribute to control how AJAX responses are swapped into the DOM. The example shows a div that fetches content from '/example' and appends it after the div itself.
+
+SOURCE: https://github.com/bigskysoftware/htmx/blob/master/www/content/attributes/hx-swap.md#_snippet_0
+
+LANGUAGE: html
+CODE:
+```
+<div hx-get="/example" hx-swap="afterend">Get Some HTML & Append It</div>
 ```

@@ -51,19 +51,19 @@ templ ChallengeFragment(ch string) {
 					const originalLabel = btn.innerHTML;
 					try {
 						if (!window.nostr || !window.nostr.signEvent) {
-							alert("Nostr NIP-07 extension not found");
+							window.showToast("Nostr NIP-07 extension not found", 'error');
 							return;
 						}
 						const challenge = document.getElementById("nostr-challenge").value;
 						if (!challenge) {
-							alert("missing challenge");
+							window.showToast("missing challenge", 'error');
 							return;
 						}
 						const ev = {
 							kind: 2222,
 							content: challenge,
 							created_at: Math.floor(Date.now() / 1000),
-							tags:[]
+							tags: []
 						};
 						// show spinner + disable button
 						btn.disabled = true;
@@ -80,7 +80,7 @@ templ ChallengeFragment(ch string) {
 						// restore button state and show error using fragment fallback
 						btn.innerHTML = originalLabel;
 						setAvailable();
-						alert("sign failed: " + e);
+						window.showToast("sign failed: " + e, 'error');
 					}
 				});
 			}

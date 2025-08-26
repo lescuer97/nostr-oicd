@@ -1,0 +1,6 @@
+package fragments
+
+// SnackbarError renders an out-of-band fragment that swaps the inner HTML of #htmx-snackbar with an error message.
+templ SnackbarError(msg string, remove string) {
+	<div remove-me={ remove } class="p-3 rounded shadow text-sm bg-red-100 text-red-800">{ msg }</div>
+}
