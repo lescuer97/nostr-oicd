@@ -13,6 +13,7 @@ import (
 
 	"github.com/lescuer97/nostr-oicd/internal/config"
 	"github.com/lescuer97/nostr-oicd/internal/models"
+	"github.com/lescuer97/nostr-oicd/internal/ui"
 	"github.com/lescuer97/nostr-oicd/templates/fragments"
 	"github.com/nbd-wtf/go-nostr"
 )
@@ -37,9 +38,8 @@ func hmacHash(key []byte, data string) string {
 func renderLoginError(ctx context.Context, w http.ResponseWriter, msg string) {
 	// Prefer sending an HX-Trigger header so HTMX can trigger a client-side notify event
 	// Prefer returning an OOB fragment to update the stable snackbar via hx-swap-oob
-	w.Header().Set("HX-Retarget", "#htmx-snackbar")
-	w.Header().Set("HX-Reswap", "innerHTML")
-	_ = fragments.SnackbarError(msg, "3s").Render(ctx, w)
+	// Use helper to render snackbar and target #htmx-snackbar
+	_ = ui.RenderSnackbar(ctx, w, msg, "error", "3s")
 	return
 }
 
