@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/lescuer97/nostr-oicd/internal/config"
@@ -19,12 +20,19 @@ const ContextUserKey = contextKey("user")
 
 // AuthMiddleware validates the session cookie token by computing HMAC(token)
 // and looking up the session in the DB. If valid, it loads the user and stores
-// it in the request context. Otherwise it returns 401.
+// it in the request context. Otherwise it returns 401 for API/HTMX requests or
+// redirects to /login for browser HTML requests.
 func AuthMiddleware(cfg *config.Config, db *sql.DB) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			cookie, err := r.Cookie(cfg.CookieName)
 			if err != nil {
+				// Decide whether to redirect (browser page) or return 401 (API/HTMX)
+				accept := r.Header.Get("Accept")
+				if strings.Contains(accept, "text/html") {
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					return
+				}
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -41,6 +49,11 @@ func AuthMiddleware(cfg *config.Config, db *sql.DB) func(next http.Handler) http
 			// find session
 			sess, err := models.GetSessionByHash(r.Context(), db, tokenHash)
 			if err != nil {
+				accept := r.Header.Get("Accept")
+				if strings.Contains(accept, "text/html") {
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					return
+				}
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -50,6 +63,11 @@ func AuthMiddleware(cfg *config.Config, db *sql.DB) func(next http.Handler) http
 			var u models.User
 			var createdAtUnix, updatedAtUnix int64
 			if err := row.Scan(&u.ID, &u.PublicKey, &u.IsAdmin, &createdAtUnix, &updatedAtUnix); err != nil {
+				accept := r.Header.Get("Accept")
+				if strings.Contains(accept, "text/html") {
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					return
+				}
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
