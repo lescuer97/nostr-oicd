@@ -13,12 +13,18 @@ import (
 
 // RegisterRoutes registers auth routes on the provided router and passes the DB to handlers.
 func RegisterRoutes(r chi.Router, cfg *config.Config, db *sql.DB) {
+	// Configure rate limiters for auth endpoints
+	// login: 5 requests per minute with burst 10
+	loginLimiter := middleware.RateLimitMiddleware(middleware.PerMinute(5), 10)
+	// challenge endpoints: 20 requests per minute with burst 40
+	challengeLimiter := middleware.RateLimitMiddleware(middleware.PerMinute(20), 40)
+
 	// Allow GET for HTMX fragment load and POST for programmatic flows
-	r.Get("/api/auth/challenge", ChallengeHandler)
-	r.Post("/api/auth/challenge", ChallengeHandler)
+	r.With(challengeLimiter).Get("/api/auth/challenge", ChallengeHandler)
+	r.With(challengeLimiter).Post("/api/auth/challenge", ChallengeHandler)
 
 	// login expects cfg+DB for session creation
-	r.Post("/api/auth/login", func(w http.ResponseWriter, r *http.Request) { LoginHandler(cfg, db, w, r) })
+	r.With(loginLimiter).Post("/api/auth/login", func(w http.ResponseWriter, r *http.Request) { LoginHandler(cfg, db, w, r) })
 	// TODO: add /signup, /status
 
 	// Logout route (protected) — POST
