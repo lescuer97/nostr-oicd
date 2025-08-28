@@ -16,30 +16,32 @@ templ loginContent() {
 			</div>
 		</div>
 	</div>
-
 	<script>
 		// Minimal detection: if the NIP-07 provider is available, request the challenge fragment.
 		// If not available, show a short hint to the user.
-		(function(){
+		(function () {
 			function fetchFragment() {
-				htmx.ajax('GET', '/api/auth/challenge', {target:'#login-card', swap:'outerHTML'});
+				htmx.ajax("GET", "/api/auth/challenge", {
+					target: "#login-card",
+					swap: "outerHTML",
+				});
 			}
 
 			function showMissing() {
-				const missing = document.getElementById('nostr-missing');
-				const init = document.getElementById('init-text');
+				const missing = document.getElementById("nostr-missing");
+				const init = document.getElementById("init-text");
 				if (init) init.remove();
-				if (missing) missing.classList.remove('hidden');
+				if (missing) missing.classList.remove("hidden");
 			}
 
 			// Immediate check; some extensions may inject slightly after load — do one quick retry after 500ms.
-			if (window.nostr && typeof window.nostr.signEvent === 'function') {
+			if (window.nostr && typeof window.nostr.signEvent === "function") {
 				fetchFragment();
 				return;
 			}
 
-			setTimeout(function(){
-				if (window.nostr && typeof window.nostr.signEvent === 'function') {
+			setTimeout(function () {
+				if (window.nostr && typeof window.nostr.signEvent === "function") {
 					fetchFragment();
 				} else {
 					showMissing();

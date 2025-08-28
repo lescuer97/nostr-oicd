@@ -17,7 +17,7 @@ templ dashboardContent(user string, isAdmin bool) {
 			<!-- Admin controls placeholder; rendered only for admins -->
 			if isAdmin {
 				<div id="admin-area">
-					<button id="show-add-user" hx-get="/admin/users/new" hx-swap='innerHTML' hx-target="#admin-controls-container" class="text-sm text-blue-600">Add user</button>
+					<button id="show-add-user" hx-get="/admin/users/new" hx-swap="innerHTML" hx-target="#admin-controls-container" class="text-sm text-blue-600">Add user</button>
 					<div id="admin-controls-container"></div>
 				</div>
 			}

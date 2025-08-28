@@ -22,25 +22,25 @@ templ ChallengeFragment(ch string) {
 				if (btn) {
 					btn.textContent = "Login with NIP-07 nostr extension";
 					btn.disabled = true;
-					btn.classList.remove('bg-green-600');
-					btn.classList.add('bg-gray-400');
+					btn.classList.remove("bg-green-600");
+					btn.classList.add("bg-gray-400");
 				}
-				if (missing) missing.classList.remove('hidden');
+				if (missing) missing.classList.remove("hidden");
 			}
 
 			function setAvailable() {
 				if (btn) {
 					btn.textContent = "Sign challenge and continue";
 					btn.disabled = false;
-					btn.classList.remove('bg-gray-400');
-					btn.classList.add('bg-green-600');
+					btn.classList.remove("bg-gray-400");
+					btn.classList.add("bg-green-600");
 				}
-				if (missing) missing.classList.add('hidden');
+				if (missing) missing.classList.add("hidden");
 			}
 
 			// Since the page only requests this fragment when a NIP-07 provider is likely available,
 			// do a simple immediate check and update UI accordingly.
-			if (window.nostr && typeof window.nostr.signEvent === 'function') {
+			if (window.nostr && typeof window.nostr.signEvent === "function") {
 				setAvailable();
 			} else {
 				setUnavailable();
@@ -51,36 +51,37 @@ templ ChallengeFragment(ch string) {
 					const originalLabel = btn.innerHTML;
 					try {
 						if (!window.nostr || !window.nostr.signEvent) {
-							window.showToast("Nostr NIP-07 extension not found", 'error');
+							window.showToast("Nostr NIP-07 extension not found", "error");
 							return;
 						}
 						const challenge = document.getElementById("nostr-challenge").value;
 						if (!challenge) {
-							window.showToast("missing challenge", 'error');
+							window.showToast("missing challenge", "error");
 							return;
 						}
 						const ev = {
 							kind: 2222,
 							content: challenge,
 							created_at: Math.floor(Date.now() / 1000),
-							tags: []
+							tags: [],
 						};
 						// show spinner + disable button
 						btn.disabled = true;
-						btn.classList.remove('bg-green-600');
-						btn.classList.add('bg-gray-400');
-						btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span>Signing...</span>';
+						btn.classList.remove("bg-green-600");
+						btn.classList.add("bg-gray-400");
+						btn.innerHTML =
+							'<svg class="animate-spin -ml-1 mr-2 h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span>Signing...</span>';
 						const signed = await window.nostr.signEvent(ev);
 						// send signed event to server via HTMX
 						htmx.ajax("POST", "/api/auth/login", {
-							values: { signed_event: JSON.stringify(signed) }
+							values: { signed_event: JSON.stringify(signed) },
 						});
 					} catch (e) {
-						console.error('sign failed', e);
+						console.error("sign failed", e);
 						// restore button state and show error using fragment fallback
 						btn.innerHTML = originalLabel;
 						setAvailable();
-						window.showToast("sign failed: " + e, 'error');
+						window.showToast("sign failed: " + e, "error");
 					}
 				});
 			}
