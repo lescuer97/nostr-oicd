@@ -17,17 +17,10 @@ templ dashboardContent(user string, isAdmin bool) {
 			<!-- Admin controls placeholder; rendered only for admins -->
 			if isAdmin {
 				<div id="admin-area">
-					<button id="show-add-user" class="text-sm text-blue-600">Add user</button>
+					<button id="show-add-user" hx-get="/admin/users/new" hx-swap='innerHTML' hx-target="#admin-controls-container" class="text-sm text-blue-600">Add user</button>
 					<div id="admin-controls-container"></div>
 				</div>
 			}
 		</div>
 	</div>
-
-	<script>
-		// Only wire up the admin button to fetch the fragment when clicked.
-		document.getElementById('show-add-user')?.addEventListener('click', function(){
-			htmx.ajax('GET', '/admin/users/new', {target:'#admin-controls-container', swap:'outerHTML'});
-		});
-	</script>
 }
